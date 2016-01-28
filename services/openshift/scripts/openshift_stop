@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Stop OpenShift Releated Containers
+
+set -o pipefail
+set -o nounset
+
+docker stop openshift
+docker ps | awk 'index($NF,"k8s_")==1 { print $1 }' | xargs -l -r docker stop
