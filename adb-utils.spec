@@ -1,4 +1,4 @@
-%global commit0 <need_update>
+%global commit0 5cd90f49df7ffd8fc41b878a886ee121e3f44f37
 %global gittag0 GIT-TAG
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
@@ -18,7 +18,7 @@ Includes the utils files and service files that are required for the running
 specific service and directly including it to kickstart file.
 
 %prep
-%setup -n adb-utils
+%setup -q -n %{name}-%{commit0}
 
 %install
 %{__mkdir_p} %{buildroot}/opt/adb
@@ -38,4 +38,7 @@ specific service and directly including it to kickstart file.
 %doc LICENSE  README.rst
 
 %changelog
+* Mon Feb 01 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-1
+- Initial attemp to create a rpm
+
 
