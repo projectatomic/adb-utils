@@ -4,7 +4,7 @@
 
 Name:       adb-utils
 Version:    1
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Installs the necessary utils/service files to support ADB/CDK
 
 License:    GPL
@@ -21,7 +21,7 @@ specific service and directly including it to kickstart file.
 %setup -q -n %{name}-%{commit0}
 
 %install
-%{__mkdir_p} %{buildroot}/opt/adb
+%{__mkdir_p} %{buildroot}/opt/adb/openshift
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/sysconfig/
 %{__mkdir_p} %{buildroot}%{_unitdir}
 
@@ -29,16 +29,17 @@ specific service and directly including it to kickstart file.
 %{buildroot}%{_unitdir}/openshift.service
 %{__cp} services/openshift/openshift_option \
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
-%{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/
+%{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 
 %files
 %{_sysconfdir}/sysconfig/openshift_option
 %{_unitdir}/openshift.service
-/opt/adb/
+/opt/adb/openshift/
 %doc LICENSE  README.rst
 
 %changelog
+* Fri Feb 05 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-2
+- Update to latest source 
+
 * Mon Feb 01 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-1
 - Initial attemp to create a rpm
-
-

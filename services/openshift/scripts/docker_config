@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Stop OpenShift Releated Containers
+
+set -o pipefail
+set -o nounset
+
+# Get machine IP address
+ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
+
+
+function usage
+{
+    echo "usage: docker_config [[[-ip ipaddress]] | [-h]]"
+}
+
+# Command line options
+
+while [ $# -gt 0 ]; do
+    case $1 in
+        -ip | --ipaddress )     shift
+                                ip=${ip:-$1}
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+    esac
+    shift
+done
+
+sed -i.back "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"--insecure-registry 172.30.0.0/16 --insecure-registry $ip\"/" /etc/sysconfig/docker
+systemctl restart docker

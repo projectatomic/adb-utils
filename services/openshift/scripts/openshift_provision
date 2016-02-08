@@ -9,44 +9,6 @@ export ORIGIN_DIR="/var/lib/origin"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 
-
-function usage
-{
-    echo "usage: openshift_provision [[[-r route ] [-host hostname]] | [-h]]"
-}
-
-# Command line options
-
-while [ $# -gt 0 ]; do
-    case $1 in
-        -r | --route )          shift
-                                route=$1
-                                ;;
-        -host | --hostname )    shift
-                                host=$1
-                                ;;
-        -h | --help )           usage
-                                exit
-                                ;;
-        * )                     usage
-                                exit 1
-    esac
-    shift
-done
-
-# Give OpenShift time to start
-echo "[INFO] Waiting for OpenShift sever to come up ..."
-for i in {1..6}
-do
-  curl -ksSf https://127.0.0.1:8443/api > /dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    echo "[INFO] ..."
-    sleep 5
-  else
-    break
-  fi
-done
-
 # Final check whether OpenShift is running
 curl -ksSf https://127.0.0.1:8443/api > /dev/null 2>&1
 if [ $? -ne 0 ]; then
@@ -54,9 +16,6 @@ if [ $? -ne 0 ]; then
   docker logs openshift
   exit 1
 fi
-
-# Make sure kubeconfig is writable
-chmod go+r ${KUBECONFIG}
 
 # Create Docker Registry
 if [ ! -f ${ORIGIN_DIR}/configured.registry ]; then
@@ -93,7 +52,7 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   # - openshift/origin
   # - openshift/nodejs-ex
   # - jboss-openshift/application-templates
-  ose_tag=ose-v1.1.0
+  ose_tag=ose-v1.2.0
   template_list=(
     # Image streams
     https://raw.githubusercontent.com/openshift/origin/master/examples/image-streams/image-streams-rhel7.json
@@ -131,13 +90,9 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   touch ${ORIGIN_DIR}/configured.templates
 fi
 
-# Configuring a test-admin user which can view the detault namespace
-if [ ! -f ${ORIGIN_DIR}/configured.user ]; then
+# Configuring a openshift-dev and admin user
+if [ ! -f ${OPENSHIFT_DIR}/user.htpasswd ]; then
   echo "[INFO] Creating 'test-admin' user and 'test' project ..."
-  oadm policy add-role-to-user view test-admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
-  oc login https://$host:8443 -u test-admin -p test \
-        --certificate-authority=${OPENSHIFT_DIR}/ca.crt &>/dev/null
-  oc new-project test --display-name="OpenShift 3 Sample" \
-        --description="This is an example project to demonstrate OpenShift v3" &>/dev/null
-  sudo touch ${ORIGIN_DIR}/configured.user
+  oadm policy add-role-to-user basic-user openshift-dev --config=${OPENSHIFT_DIR}/admin.kubeconfig
+  oadm policy add-role-to-user cluster-admin admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
 fi
