@@ -3,7 +3,7 @@
 # sccli - Service Change CLI
 # Script to switch openshift from k8s or vice-versa 
 
-function single_node_setup ()
+function single_node_k8s_setup ()
 {
     # Clean before starting
     clean_setup
@@ -74,7 +74,7 @@ function openshift()
 if [ "$#" -ne 1 ]; then
     usage
 elif [ "$1" == "k8s" ]; then
-    single_node_setup
+    single_node_k8s_setup
 elif [ "$1" == "openshift" ]; then
     openshift
 elif [ "$1" == "clean" ]; then
