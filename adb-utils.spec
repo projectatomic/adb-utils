@@ -1,4 +1,4 @@
-%global commit0 5cd90f49df7ffd8fc41b878a886ee121e3f44f37
+%global commit0 e5af099977f1a533ea825fdfa48e31fbe9f74ab9
 %global gittag0 GIT-TAG
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
@@ -24,6 +24,7 @@ specific service and directly including it to kickstart file.
 %{__mkdir_p} %{buildroot}/opt/adb/openshift
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/sysconfig/
 %{__mkdir_p} %{buildroot}%{_unitdir}
+%{__mkdir_p} %{buildroot}%{_bindir}
 
 %{__install} -pm644 services/openshift/openshift.service \
 %{buildroot}%{_unitdir}/openshift.service
@@ -31,14 +32,19 @@ specific service and directly including it to kickstart file.
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 %{__cp} utils/* %{buildroot}/opt/adb/
+ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 
 %files
 %{_sysconfdir}/sysconfig/openshift_option
 %{_unitdir}/openshift.service
+%{_bindir}/sccli
 /opt/adb/
 %doc LICENSE  README.rst
 
 %changelog
+* Tue Feb 09 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-3
+- Add sccli changes
+
 * Fri Feb 05 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-2
 - Update to latest source 
 
