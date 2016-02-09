@@ -30,11 +30,12 @@ specific service and directly including it to kickstart file.
 %{__cp} services/openshift/openshift_option \
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
+%{__cp} utils/* %{buildroot}/opt/adb/
 
 %files
 %{_sysconfdir}/sysconfig/openshift_option
 %{_unitdir}/openshift.service
-/opt/adb/openshift/
+/opt/adb/
 %doc LICENSE  README.rst
 
 %changelog
