@@ -61,8 +61,9 @@ function clean_setup ()
 
 function usage()
 {
-    echo "usage: k8s-setup [service_name] || [clean]"
-    echo "Service name either k8s or openshift"
+    echo "usage: sccli [service_name] || [clean]"
+    echo "List of possible service_name: "
+    echo -e "\tk8s openshift"
 }
 
 function openshift()
