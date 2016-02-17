@@ -14,7 +14,6 @@ ExecStartPre=-/usr/bin/docker rm openshift
 ExecStartPre=-/usr/bin/docker tag ${DOCKER_REGISTRY}/${IMAGE} openshift
 ExecStartPre=-/usr/bin/sh /opt/adb/openshift/docker_config $OPTIONS
 ExecStart=/usr/bin/sh /opt/adb/openshift/openshift $OPTIONS
-ExecStartPost=/bin/sleep 30
 ExecStartPost=/usr/bin/sh /opt/adb/openshift/openshift_provision
 ExecStop=/usr/bin/sh -c /opt/adb/openshift/openshift_stop
 KillMode=process
