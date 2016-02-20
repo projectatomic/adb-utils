@@ -28,7 +28,7 @@ while [ $# -gt 0 ]; do
         -ip | --ipaddress )     shift
                                 ip=${ip:-$1}
                                 ;;
-        -host | --hostname )    shift 
+        -host | --hostname )    shift
                                 host=${host:-$1}
                                 ;;
         -h | --help )           usage
@@ -56,6 +56,22 @@ start_openshift() {
         -v ${ORIGIN_DIR}/openshift.local.config:${ORIGIN_DIR}/openshift.local.config:z \
         -v ${ORIGIN_DIR}/openshift.local.etcd:${ORIGIN_DIR}/openshift.local.etcd:z \
         openshift start "${@:2}"
+}
+
+wait_for_openshift_api() {
+    # Wait for container to show up
+    ATTEMPT=0
+    until docker inspect openshift > /dev/null 2>&1 || [ $ATTEMPT -eq 10 ]; do
+      sleep 1
+      ((ATTEMPT++))
+    done
+
+    # Wait for API to be accessible
+    ATTEMPT=0
+    until curl -ksSf https://$ip:8443/api > /dev/null 2>&1 || [ $ATTEMPT -eq 30 ]; do
+      sleep 1
+      ((ATTEMPT++))
+    done
 }
 
 ########################################################################
@@ -136,3 +152,4 @@ fi
 # Now we start the server pointing to the prepared config files
 echo "[INFO] Starting OpenShift server"
 start_openshift '' --master-config="${master_config}" --node-config="${node_config}"
+wait_for_openshift_api
