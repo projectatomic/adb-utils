@@ -3,8 +3,35 @@ adb-utils
 
 Utility and Service scripts for the `Atomic-Developer-Bundle (ADB) <https://github.com/projectatomic/adb-atomic-developer-bundle>`_.
 
+adb-utils provides following content to ADB Vagrant box
+
+* OpenShift as a service
+
+  adb-utils uses a systemd service unit file to launch and setup a containerized version of OpenShift. With the systemd unit file, OpenShift can be configured and run in the ADB by issuing the following command: *systemctl start openshift*.
+
+* SCCLI
+
+  SCCLI provides a single point of entry for managing services inside of the ADB. This is primarily of interest to users who use the ADB as a VM they access via *vagrant ssh*.
+
+  This CLI can clean the environment and ensure that the requested service is set up properly.
+
+  Currently SCCLI only provides an interface for managing OpenShift or a single node Kubernetes instance.
+
+The usage of sccli is as below::
+
+       $ sccli --help
+
+       usage: sccli [service_name] || [clean]
+       List of possible service_name:
+                k8s openshift
+
+
+These utilities and unit files are packaged as an RPM and included in `Atomic-Developer-Bundle (ADB) <https://github.com/projectatomic/adb-atomic-developer-bundle>`_ version 1.7.0 or later.
+
+The public YUM repository is available at : http://mirror.centos.org/centos-7/7/atomic/x86_64/adb/
+
 Steps to build the SRC RPM
---------------------------
+==========================
 * Create source tar ball
 
   spectool -g -R adb-utils.spec
