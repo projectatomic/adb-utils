@@ -8,6 +8,10 @@ set -o nounset
 # Get machine IP address
 ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
 
+if [ -z "$ip" ]; then
+    ip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
+fi
+
 
 function usage
 {
@@ -28,5 +32,8 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-sed -i.back "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"--insecure-registry 172.30.0.0/16 --insecure-registry $ip\"/" /etc/sysconfig/docker
-systemctl restart docker
+sed -i.back "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"\"" /etc/sysconfig/docker
+if ! grep -qE 172.30.0.0.*${ip} /etc/sysconfig/docker; then
+    sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $ip\"/" /etc/sysconfig/docker
+    systemctl restart docker
+fi
