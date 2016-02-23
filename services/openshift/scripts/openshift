@@ -12,6 +12,12 @@ export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 # Get machine IP address
 ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
 
+# In case eth1 is not configured.
+if [ -z "$ip" ]; then
+    ip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
+fi
+
+
 # Machine xip.io hostname
 host="adb.$ip.xip.io"
 
@@ -25,9 +31,6 @@ function usage
 
 while [ $# -gt 0 ]; do
     case $1 in
-        -ip | --ipaddress )     shift
-                                ip=${ip:-$1}
-                                ;;
         -host | --hostname )    shift
                                 host=${host:-$1}
                                 ;;
