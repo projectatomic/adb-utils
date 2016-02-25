@@ -94,5 +94,5 @@ fi
 if [ ! -f ${OPENSHIFT_DIR}/user.htpasswd ]; then
   echo "[INFO] Creating 'test-admin' user and 'test' project ..."
   oadm policy add-role-to-user basic-user openshift-dev --config=${OPENSHIFT_DIR}/admin.kubeconfig
-  oadm policy add-role-to-user cluster-admin admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
+  oadm policy add-cluster-role-to-user cluster-admin admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
 fi
