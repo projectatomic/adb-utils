@@ -1,4 +1,4 @@
-%global commit0 e5af099977f1a533ea825fdfa48e31fbe9f74ab9
+%global commit0 d4364958c55ad025eff83efb062e11ecd5a6696a
 %global gittag0 GIT-TAG
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 
@@ -42,6 +42,16 @@ ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 %doc LICENSE  README.rst
 
 %changelog
+* Tue Mar 01 2016 Brian Exelbierd <bex@pobox.com> 1-4
+- Architecture change: openshift image/version info passed from the
+  Vagrantfile to the box
+- docker pull is now done in sccli
+- Uses IMAGE_* variables so that sccli can use same for other svcs
+- DOCKER_REGISTRY var removed from openshift_options now in image name
+- `docker tag` removed from the unit file
+- when using openshift, enable the service for future reboots
+- CLI binaries now copied with `docker cp` for efficiency
+
 * Tue Feb 09 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1-3
 - Add sccli changes
 

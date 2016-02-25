@@ -2,5 +2,4 @@
 
 # Modify these options if you want to change openshift hostname
 OPTIONS="-host adb.vm"
-IMAGE="openshift/origin:v1.1.1"
-DOCKER_REGISTRY="docker.io"
+IMAGE="docker.io/openshift/origin:v1.1.1"

@@ -17,14 +17,17 @@ adb-utils provides following content to ADB Vagrant box
 
   Currently SCCLI only provides an interface for managing OpenShift or a single node Kubernetes instance.
 
-The usage of sccli is as below::
+  The usage of sccli is as below::
 
-       $ sccli --help
+      $ sccli --help
 
-       usage: sccli [service_name] || [clean]
-       List of possible service_name:
-                k8s openshift
+      usage: sccli [service_name] || [clean]
+      List of possible service_name:
+               k8s openshift
 
+  **NOTE:** The image of OpenShift defaults to `docker.io/openshift/origin:v1.1.1`.  If you desire a different version, pass the `DOCKER_REGISTRY`, `IMAGE_NAME` and/or `IMAGE_TAG` environment variables.  For example, to use the `latest` version::
+
+      $ IMAGE_TAG="latest" sccli openshift
 
 These utilities and unit files are packaged as an RPM and included in `Atomic-Developer-Bundle (ADB) <https://github.com/projectatomic/adb-atomic-developer-bundle>`_ version 1.7.0 or later.
 

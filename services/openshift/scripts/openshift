@@ -55,7 +55,7 @@ start_openshift() {
         -v ${ORIGIN_DIR}/openshift.local.volumes:${ORIGIN_DIR}/openshift.local.volumes:z \
         -v ${ORIGIN_DIR}/openshift.local.config:${ORIGIN_DIR}/openshift.local.config:z \
         -v ${ORIGIN_DIR}/openshift.local.etcd:${ORIGIN_DIR}/openshift.local.etcd:z \
-        openshift start "${@:2}"
+        $IMAGE start "${@:2}"
 }
 
 ########################################################################
@@ -90,14 +90,6 @@ wait_for_config_files() {
 ########################################################################
 # Main
 ########################################################################
-# Copy OpenShift CLI tools to the VM
-binaries=(oc oadm)
-for n in ${binaries[@]}; do
-        [ -f /usr/bin/${n} ] && continue
-        echo "[INFO] Copying the OpenShift '${n}' binary to host /usr/bin/${n}"
-        docker run --rm --entrypoint=/bin/cat openshift /usr/bin/${n} > /usr/bin/${n}
-        chmod +x /usr/bin/${n}
-done
 
 # First start OpenShift to just write the config files
 master_config=${OPENSHIFT_DIR}/master-config.yaml

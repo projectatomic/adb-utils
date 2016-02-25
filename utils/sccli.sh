@@ -55,6 +55,7 @@ function clean_setup ()
     if $(systemctl is-active openshift > /dev/null); then
         echo "Stopping the Openshift services"
         sudo systemctl stop openshift
+        sudo systemctl disable openshift
         sudo systemctl reset-failed openshift
     fi
 }
@@ -68,7 +69,24 @@ function usage()
 
 function openshift()
 {
+    # Default OpenShift Image and Tag
+    dockerRegistry=${DOCKER_REGISTRY:-docker.io}
+    imageName=${IMAGE_NAME:-openshift/origin}
+    imageTag=${IMAGE_TAG:-v1.1.1}
+
     clean_setup
+
+    # Setup the systemd environment - desired image may have changed
+    sudo sed -i.back "/^IMAGE=*/cIMAGE=\"${dockerRegistry}/${imageName}\:${imageTag}\"" /etc/sysconfig/openshift_option
+
+    # ensure the docker containers are present
+    docker pull ${dockerRegistry}/${imageName}:${imageTag}
+    docker pull ${dockerRegistry}/${imageName}-haproxy-router:${imageTag}
+    docker pull ${dockerRegistry}/${imageName}-deployer:${imageTag}
+    docker pull ${dockerRegistry}/${imageName}-docker-registry:${imageTag}
+    docker pull ${dockerRegistry}/${imageName}-sti-builder:${imageTag}
+
+    sudo systemctl enable openshift
     sudo systemctl start openshift
 }
 
