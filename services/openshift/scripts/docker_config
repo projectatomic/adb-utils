@@ -1,28 +1,25 @@
 #!/usr/bin/env bash
 
-# Stop OpenShift Releated Containers
+. /opt/adb/openshift/get_ip_address
 
 set -o pipefail
 set -o nounset
 
-# Get machine IP address
-ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
+docker_conf_file='/etc/sysconfig/docker'
+is_restart_req=false
 
-if [ -z "$ip" ]; then
-    ip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
-fi
-
+#Initialize ip
+ip=""
 
 function usage
 {
-    echo "usage: docker_config [[[-ip ipaddress]] | [-h]]"
+    echo "usage: $0 -ip ipaddress | [-h | --help]"
 }
 
-# Command line options
-
+#Handle command line arguments
 while [ $# -gt 0 ]; do
     case $1 in
-        -ip | --ipaddress )     shift
+        -ip )                   shift
                                 ip=${ip:-$1}
                                 ;;
         -h | --help )           usage
@@ -32,8 +29,43 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-sed -i.back "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"\"" /etc/sysconfig/docker
-if ! grep -qE 172.30.0.0.*${ip} /etc/sysconfig/docker; then
-    sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $ip\"/" /etc/sysconfig/docker
+function init_insecure_reg()
+{
+    if grep -q '# INSECURE_REGISTRY' ${docker_conf_file}
+    then
+        sed -i.orig "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"\"" ${docker_conf_file}
+        # Get machine IP address
+        local local_ip=$(get_ip_address)
+        sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $local_ip\"/" ${docker_conf_file}
+        is_restart_req=true
+    fi
+}
+
+function append_insecure_reg()
+{
+    local ip=$1
+    local orig_str=`grep '^INSECURE_REGISTRY' ${docker_conf_file}`
+
+    #Check if the IP is already part of insecure registry, if not add it
+    if ! echo ${orig_str} | grep -q ${ip}
+    then
+        local replace_str="INSECURE_REGISTRY=\""
+        local add_str="INSECURE_REGISTRY=\" --insecure-registry ${ip}"
+        local result_str="${orig_str/$replace_str/$add_str}"
+
+        #Put the result string in the ${docker_conf_file}
+        sed -i.back "s|${orig_str}|${result_str}|" ${docker_conf_file}
+        is_restart_req=true
+    fi
+}
+
+#Main
+init_insecure_reg
+if ! test -z $ip ; then
+    append_insecure_reg ${ip}
+fi
+
+#Restart the docker demon if $is_restart_req is set to true
+if [ "$is_restart_req" = true ] ; then
     systemctl restart docker
 fi
