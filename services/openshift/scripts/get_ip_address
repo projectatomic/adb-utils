@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+function get_ip_address()
+{
+    local ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
+
+    # In case eth1 is not configured.
+    if [ -z "$ip" ]; then
+       ip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
+    fi
+
+    echo $ip
+}
+
+sourcef=${BASH_SOURCE[0]}
+if [ $sourcef == $0 ]; then
+    get_ip_address $@
+fi

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#export get_ip_address
+. /opt/adb/openshift/get_ip_address
+
 # Prepare, configure and start OpenShift
 
 set -o pipefail
@@ -57,7 +60,9 @@ if [ ! -f ${ORIGIN_DIR}/configured.router ]; then
     --service-account=router
   touch ${ORIGIN_DIR}/configured.router
 
-  registry_host_name="hub.$(hostname)"
+  # Get machine IP address
+  ip=$(get_ip_address)
+  registry_host_name="hub.$(hostname).${ip}.xip.io"
   oc expose service docker-registry --hostname ${registry_host_name}
 fi
 
