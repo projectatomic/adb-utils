@@ -61,22 +61,6 @@ start_openshift() {
         openshift start "${@:2}"
 }
 
-wait_for_openshift_api() {
-    # Wait for container to show up
-    ATTEMPT=0
-    until docker inspect openshift > /dev/null 2>&1 || [ $ATTEMPT -eq 10 ]; do
-      sleep 1
-      ((ATTEMPT++))
-    done
-
-    # Wait for API to be accessible
-    ATTEMPT=0
-    until curl -ksSf https://$ip:8443/api > /dev/null 2>&1 || [ $ATTEMPT -eq 30 ]; do
-      sleep 1
-      ((ATTEMPT++))
-    done
-}
-
 ########################################################################
 # Helper function to remove existing openshift container
 ########################################################################
@@ -155,4 +139,3 @@ fi
 # Now we start the server pointing to the prepared config files
 echo "[INFO] Starting OpenShift server"
 start_openshift '' --master-config="${master_config}" --node-config="${node_config}"
-wait_for_openshift_api
