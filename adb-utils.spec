@@ -1,5 +1,5 @@
 Name:          adb-utils
-Version:       1.2
+Version:       1.3
 Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
@@ -20,6 +20,7 @@ specific service and directly including it to kickstart file.
 
 %install
 %{__mkdir_p} %{buildroot}/opt/adb/openshift
+%{__mkdir_p} %{buildroot}/opt/adb/openshift/templates
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/sysconfig/
 %{__mkdir_p} %{buildroot}%{_unitdir}
 %{__mkdir_p} %{buildroot}%{_bindir}
@@ -30,6 +31,7 @@ specific service and directly including it to kickstart file.
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 %{__cp} utils/* %{buildroot}/opt/adb/
+%{__cp} services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
 ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 
 %files
@@ -40,6 +42,9 @@ ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 %doc LICENSE  README.rst
 
 %changelog
+* Thu Mar 17 2016 Lalatendu Mohanty <lmohanty@redhat.com> 1.3-1
+- Adding openshift templates
+
 * Wed Mar 09 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.2-1
 - Update to 1.2 with couple of bugfix
 
