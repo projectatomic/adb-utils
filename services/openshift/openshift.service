@@ -11,7 +11,6 @@ Restart=always
 EnvironmentFile=-/etc/sysconfig/openshift_option
 ExecStartPre=-/usr/bin/docker stop openshift
 ExecStartPre=-/usr/bin/docker rm openshift
-ExecStartPre=-/usr/bin/docker tag ${DOCKER_REGISTRY}/${IMAGE} openshift
 ExecStartPre=-/usr/bin/sh /opt/adb/openshift/docker_config
 ExecStart=/usr/bin/sh /opt/adb/openshift/openshift $OPTIONS
 ExecStartPost=/usr/bin/sh /opt/adb/openshift/openshift_provision
