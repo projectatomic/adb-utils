@@ -8,7 +8,7 @@
 set -o pipefail
 set -o nounset
 
-export ORIGIN_DIR="/var/lib/origin"
+export ORIGIN_DIR="/var/lib/openshift"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 

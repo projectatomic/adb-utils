@@ -8,7 +8,7 @@
 set -o pipefail
 set -o nounset
 
-export ORIGIN_DIR="/var/lib/origin"
+export ORIGIN_DIR="/var/lib/openshift"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 
@@ -112,7 +112,7 @@ if [ ! -f $master_config ]; then
     htpasswd -b ${OPENSHIFT_DIR}/user.htpasswd admin admin
 
     # Now we need to make some adjustments to the config
-    DIR_EXPAND="\/var\/lib\/origin\/openshift.local.config\/master"
+    DIR_EXPAND="\/var\/lib\/openshift\/openshift.local.config\/master"
     echo "[INFO] Configuring OpenShift via ${master_config}"
     sed -i.orig -e "s/\(.*subdomain:\).*/\1 $host/" ${master_config} \
     -e "s/\(.*masterPublicURL:\).*/\1 https:\/\/$ip:8443/g" \
