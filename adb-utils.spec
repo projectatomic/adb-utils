@@ -1,16 +1,14 @@
-%global commit0 d4364958c55ad025eff83efb062e11ecd5a6696a
-%global gittag0 GIT-TAG
-%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+Name:          adb-utils
+Version:       1.1
+Release:       1%{?dist}
+Summary:       Installs the necessary utils/service files to support ADB/CDK
 
-Name:       adb-utils
-Version:    1
-Release:    2%{?dist}
-Summary:    Installs the necessary utils/service files to support ADB/CDK
+License:       GPLV2
+BuildArch:     noarch
 
-License:    GPL
-URL:        https://github.com/projectatomic/%{name}
-BuildArch:  noarch
-Source0:    https://github.com/projectatomic/%{name}/archive/%{commit0}.tar.gz#/%{name}-%{shortcommit0}.tar.gz
+URL:           https://github.com/projectatomic/%{name}
+Source0:       https://github.com/projectatomic/%{name}/archive/v%{version}.tar.gz
+
 BuildRequires: systemd
 
 %description
@@ -18,7 +16,7 @@ Includes the utils files and service files that are required for the running
 specific service and directly including it to kickstart file.
 
 %prep
-%setup -q -n %{name}-%{commit0}
+%setup -q -n %{name}-%{version}
 
 %install
 %{__mkdir_p} %{buildroot}/opt/adb/openshift
@@ -42,6 +40,10 @@ ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 %doc LICENSE  README.rst
 
 %changelog
+* Thu Mar 03 2016 Lalatendu Mohanty <lmohanty@redhat.com> 1.1-1
+- Updating to 1.1 and couple of specfile fixes
+- Removing dependancy on commit0
+
 * Tue Mar 01 2016 Brian Exelbierd <bex@pobox.com> 1-4
 - Architecture change: openshift image/version info passed from the
   Vagrantfile to the box
