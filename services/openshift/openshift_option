@@ -1,5 +1,5 @@
 # /etc/sysconfig/openshift_options
 
 # Modify these options if you want to change openshift hostname
-OPTIONS="-host adb.vm"
+OPTIONS="-host $(hostname)"
 IMAGE="docker.io/openshift/origin:v1.1.1"

@@ -16,7 +16,7 @@ export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 ip=$(get_ip_address)
 
 # Machine xip.io hostname
-host="adb.$ip.xip.io"
+host="$(hostname).$ip.xip.io"
 
 
 function usage
