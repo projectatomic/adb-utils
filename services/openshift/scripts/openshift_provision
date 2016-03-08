@@ -116,8 +116,9 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
 fi
 
 # Configuring a openshift-dev and admin user
-if [ ! -f ${OPENSHIFT_DIR}/user.htpasswd ]; then
-  echo "[INFO] Creating 'test-admin' user and 'test' project ..."
+if [ ! -f ${ORIGIN_DIR}/configured.user ]; then
+  echo "[INFO] Adding required roles to openshift-dev and admin user ..."
   oadm policy add-role-to-user basic-user openshift-dev --config=${OPENSHIFT_DIR}/admin.kubeconfig
   oadm policy add-cluster-role-to-user cluster-admin admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
+  touch ${ORIGIN_DIR}/configured.user
 fi
