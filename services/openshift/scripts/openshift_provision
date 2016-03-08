@@ -21,9 +21,9 @@ wait_for_openshift_api() {
       ((ATTEMPT++))
     done
 
-    # Wait for API to be accessible
+    # Use health URL to check OpenShift readiness
     ATTEMPT=0
-    until curl -ksSf https://127.0.0.1:8443/api > /dev/null 2>&1 || [ $ATTEMPT -eq 30 ]; do
+    until curl -ksSf https://127.0.0.1:8443/healthz/ready > /dev/null 2>&1 || [ $ATTEMPT -eq 60 ]; do
       sleep 1
       ((ATTEMPT++))
     done
