@@ -36,7 +36,8 @@ function init_insecure_reg()
         sed -i.orig "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"\"" ${docker_conf_file}
         # Get machine IP address
         local local_ip=$(get_ip_address)
-        sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $local_ip\"/" ${docker_conf_file}
+        local registry_host_name="hub.openshift.${local_ip}.xip.io"
+        sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $registry_host_name\"/" ${docker_conf_file}
         is_restart_req=true
     fi
 }
