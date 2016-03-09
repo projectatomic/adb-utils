@@ -11,34 +11,10 @@ set -o nounset
 export ORIGIN_DIR="/var/lib/openshift"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
+eval "OPENSHIFT_SUBDOMAIN=${OPENSHIFT_SUBDOMAIN}"
 
 # Get machine IP address
 ip=$(get_ip_address)
-
-# Machine xip.io hostname
-host="$(hostname).$ip.xip.io"
-
-
-function usage
-{
-    echo "usage: openshift [[[-ip ipaddress ] [-host hostname]] | [-h]]"
-}
-
-# Command line options
-
-while [ $# -gt 0 ]; do
-    case $1 in
-        -host | --hostname )    shift
-                                host=${host:-$1}
-                                ;;
-        -h | --help )           usage
-                                exit
-                                ;;
-        * )                     usage
-                                exit 1
-    esac
-    shift
-done
 
 
 ########################################################################
@@ -116,7 +92,7 @@ if [ ! -f $master_config ]; then
     # Now we need to make some adjustments to the config
     DIR_EXPAND="\/var\/lib\/openshift\/openshift.local.config\/master"
     echo "[INFO] Configuring OpenShift via ${master_config}"
-    sed -i.orig -e "s/\(.*subdomain:\).*/\1 $host/" ${master_config} \
+    sed -i.orig -e "s/\(.*subdomain:\).*/\1 $OPENSHIFT_SUBDOMAIN/" ${master_config} \
     -e "s/\(.*masterPublicURL:\).*/\1 https:\/\/$ip:8443/g" \
     -e "s/\(.*publicURL:\).*/\1 https:\/\/$ip:8443\/console\//g" \
     -e "s/\(.*assetPublicURL:\).*/\1 https:\/\/$ip:8443\/console\//g" \

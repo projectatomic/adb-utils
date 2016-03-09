@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-#export get_ip_address
-. /opt/adb/openshift/get_ip_address
-
 # Prepare, configure and start OpenShift
 
 set -o pipefail
@@ -11,6 +8,7 @@ set -o nounset
 export ORIGIN_DIR="/var/lib/openshift"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
+eval "OPENSHIFT_SUBDOMAIN=${OPENSHIFT_SUBDOMAIN}"
 
 # Function to check openshift availability
 wait_for_openshift_api() {
@@ -36,8 +34,10 @@ wait_for_openshift_api
 # Note: oc and oadm are symlinks to openshift
 binaries=(openshift oc oadm)
 for n in ${binaries[@]}; do
-  echo "[INFO] Copying ${n} binary to VM"
-  docker cp openshift:/usr/bin/${n} /usr/bin/${n}
+  if [ ! -f /usr/bin/${n} ]; then
+      echo "[INFO] Copying ${n} binary to VM"
+      docker cp openshift:/usr/bin/${n} /usr/bin/${n}
+  fi
 done
 
 # Create Docker Registry
@@ -63,9 +63,8 @@ if [ ! -f ${ORIGIN_DIR}/configured.router ]; then
   touch ${ORIGIN_DIR}/configured.router
 
   # Get machine IP address
-  ip=$(get_ip_address)
-  registry_host_name="hub.openshift.${ip}.xip.io"
-  oc expose service docker-registry --hostname ${registry_host_name}
+  registry_name="hub.openshift.${OPENSHIFT_SUBDOMAIN}"
+  oc expose service docker-registry --hostname ${registry_name}
 fi
 
 # Installing templates into OpenShift
