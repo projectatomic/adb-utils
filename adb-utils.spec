@@ -1,5 +1,5 @@
 Name:          adb-utils
-Version:       1.1
+Version:       1.2
 Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
@@ -40,6 +40,9 @@ ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
 %doc LICENSE  README.rst
 
 %changelog
+* Wed Mar 09 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.2-1
+- Update to 1.2 with couple of bugfix
+
 * Thu Mar 03 2016 Lalatendu Mohanty <lmohanty@redhat.com> 1.1-1
 - Updating to 1.1 and couple of specfile fixes
 - Removing dependancy on commit0
