@@ -120,5 +120,9 @@ if [ ! -f ${ORIGIN_DIR}/configured.user ]; then
   echo "[INFO] Adding required roles to openshift-dev and admin user ..."
   oadm policy add-role-to-user basic-user openshift-dev --config=${OPENSHIFT_DIR}/admin.kubeconfig
   oadm policy add-cluster-role-to-user cluster-admin admin --config=${OPENSHIFT_DIR}/admin.kubeconfig
+  oc login https://127.0.0.1:8443 -u openshift-dev -p devel \
+        --certificate-authority=${OPENSHIFT_DIR}/ca.crt &>/dev/null
+  oc new-project sample-project --display-name="OpenShift sample project" \
+        --description="This is a sample project to demonstrate OpenShift v3" &>/dev/null
   touch ${ORIGIN_DIR}/configured.user
 fi
