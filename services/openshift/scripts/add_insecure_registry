@@ -1,26 +1,23 @@
 #!/usr/bin/env bash
 
-. /opt/adb/openshift/get_ip_address
-
 set -o pipefail
 set -o nounset
 
 docker_conf_file='/etc/sysconfig/docker'
 is_restart_req=false
+host=""
 
-#Initialize ip
-ip=""
 
 function usage
 {
-    echo "usage: $0 -ip ipaddress | [-h | --help]"
+    echo "usage: $0 -host hostname | [-h | --help]"
 }
 
 #Handle command line arguments
 while [ $# -gt 0 ]; do
     case $1 in
-        -ip )                   shift
-                                ip=${ip:-$1}
+        -host )                 shift
+                                eval "host=$1"
                                 ;;
         -h | --help )           usage
                                 exit
@@ -35,8 +32,8 @@ function init_insecure_reg()
     then
         sed -i.orig "/# INSECURE_REGISTRY=*/c\INSECURE_REGISTRY=\"\"" ${docker_conf_file}
         # Get machine IP address
-        local local_ip=$(get_ip_address)
-        local registry_host_name="hub.openshift.${local_ip}.xip.io"
+        eval "openshift_subdomain=${OPENSHIFT_SUBDOMAIN}"
+        local registry_host_name="hub.openshift.${openshift_subdomain}"
         sed -i.back "s/INSECURE_REGISTRY=\"\(.*\)\"/INSECURE_REGISTRY=\"\1 --insecure-registry 172.30.0.0\/16 --insecure-registry $registry_host_name\"/" ${docker_conf_file}
         is_restart_req=true
     fi
@@ -44,14 +41,14 @@ function init_insecure_reg()
 
 function append_insecure_reg()
 {
-    local ip=$1
+    local host=$1
     local orig_str=`grep '^INSECURE_REGISTRY' ${docker_conf_file}`
 
-    #Check if the IP is already part of insecure registry, if not add it
-    if ! echo ${orig_str} | grep -q ${ip}
+    #Check if the host is already part of insecure registry, if not add it
+    if ! echo ${orig_str} | grep -q ${host}
     then
         local replace_str="INSECURE_REGISTRY=\""
-        local add_str="INSECURE_REGISTRY=\" --insecure-registry ${ip}"
+        local add_str="INSECURE_REGISTRY=\" --insecure-registry ${host}"
         local result_str="${orig_str/$replace_str/$add_str}"
 
         #Put the result string in the ${docker_conf_file}
@@ -62,8 +59,8 @@ function append_insecure_reg()
 
 #Main
 init_insecure_reg
-if ! test -z $ip ; then
-    append_insecure_reg ${ip}
+if ! test -z $host ; then
+    append_insecure_reg ${host}
 fi
 
 #Restart the docker demon if $is_restart_req is set to true
