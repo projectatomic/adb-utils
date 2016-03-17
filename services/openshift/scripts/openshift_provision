@@ -67,6 +67,51 @@ if [ ! -f ${ORIGIN_DIR}/configured.router ]; then
   oc expose service docker-registry --hostname ${registry_name}
 fi
 
+
+# Securing the Registry
+# https://docs.openshift.org/latest/install_config/install/docker_registry.html#securing-the-registry
+if [ ! -f ${ORIGIN_DIR}/secured.registry ]; then
+  # Public name for the registry
+  REGISTRY_ROUTE=$(oc get route docker-registry -o template --template='{{ .spec.host }}')
+
+  # Get IP and Port of the registry service
+  REGISTRY_SERVICE_IP=$(oc get svc/docker-registry -o template --template='{{ .spec.clusterIP }}')
+  REGISTRY_SERVICE_PORT=$(oc get svc/docker-registry -o template --template='{{ (index .spec.ports 0).port }}')
+
+  # Create certificates for registry
+  oadm ca create-server-cert --signer-cert=$OPENSHIFT_DIR/ca.crt \
+      --signer-key=$OPENSHIFT_DIR/ca.key --signer-serial=$OPENSHIFT_DIR/ca.serial.txt \
+      --hostnames="$REGISTRY_ROUTE,$REGISTRY_SERVICE_IP" \
+      --cert=$OPENSHIFT_DIR/registry.crt --key=$OPENSHIFT_DIR/registry.key
+
+  # Create the secret for the registry certificates
+  oc secrets new registry-secret $OPENSHIFT_DIR/registry.crt $OPENSHIFT_DIR/registry.key
+
+  # Add the secret volume to the registry deployment configuration:
+  oc volume dc/docker-registry --add --type=secret \
+      --secret-name=registry-secret -m /etc/secrets
+
+  # Enable TLS by adding the following environment variables to the registry deployment configuration
+  oc env dc/docker-registry \
+      REGISTRY_HTTP_TLS_CERTIFICATE=/etc/secrets/registry.crt \
+      REGISTRY_HTTP_TLS_KEY=/etc/secrets/registry.key
+
+  # Update the scheme used for the registry’s liveness probe from HTTP to HTTPS:
+  oc get dc/docker-registry -o yaml \
+      | sed -e 's/scheme: HTTP/scheme: HTTPS/g' \
+      | oc replace -f -
+
+  # Copy the CA certificate to the Docker certificates directory.
+  mkdir -p /etc/docker/certs.d/$REGISTRY_SERVICE_IP:$REGISTRY_SERVICE_PORT
+  cp $OPENSHIFT_DIR/ca.crt /etc/docker/certs.d/$REGISTRY_SERVICE_IP:$REGISTRY_SERVICE_PORT
+
+  mkdir -p /etc/docker/certs.d/$REGISTRY_ROUTE
+  cp $OPENSHIFT_DIR/ca.crt /etc/docker/certs.d/$REGISTRY_ROUTE
+
+  # add "tls termination: passthroug" to already existing docker registry route
+  oc get route docker-registry -o json  | sed -e 's/\("spec": {\)/\1 "tls": {"termination": "passthrough"},/g' | oc replace -f -
+fi
+
 # Installing templates into OpenShift
 if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   echo "[INFO] Installing OpenShift templates"
