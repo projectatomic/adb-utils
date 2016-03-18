@@ -97,7 +97,8 @@ if [ ! -f $master_config ]; then
     -e "s/\(.*publicURL:\).*/\1 https:\/\/$ip:8443\/console\//g" \
     -e "s/\(.*assetPublicURL:\).*/\1 https:\/\/$ip:8443\/console\//g" \
     -e "s/\(.*\)anypassword/\1 htpasswd/" \
-    -e "s/\(.*\)kind: AllowAllPasswordIdentityProvider/\1kind: HTPasswdPasswordIdentityProvider\n\1file: ${DIR_EXPAND}\/user.htpasswd/"
+    -e "s/\(.*\)kind: AllowAllPasswordIdentityProvider/\1kind: HTPasswdPasswordIdentityProvider\n\1file: ${DIR_EXPAND}\/user.htpasswd/" \
+    -e "/corsAllowedOrigins:/,/- localhost/c\corsAllowedOrigins:\n- .*"
 
     # Remove the container
     rm_openshift_container
