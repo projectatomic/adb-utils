@@ -112,6 +112,51 @@ if [ ! -f ${ORIGIN_DIR}/secured.registry ]; then
   oc get route docker-registry -o json  | sed -e 's/\("spec": {\)/\1 "tls": {"termination": "passthrough"},/g' | oc replace -f -
 fi
 
+
+# Provision persistence volumes
+if [ ! -f ${ORIGIN_DIR}/configured.nfs ]; then
+  echo "[INFO] Creating and configuring NFS"
+  mkdir -p /nfsvolumes/pv{01..03}
+  chown -R nfsnobody:nfsnobody /nfsvolumes
+  chmod -R 777 /nfsvolumes
+  echo '' > /etc/exports
+
+  for i in {01..03}
+  do
+    echo "/nfsvolumes/pv${i} *(rw,root_squash)" >> /etc/exports
+  done
+  # To allow pods to write to remote NFS servers
+  setsebool -P virt_use_nfs 1
+
+  # Start and enable nfs
+  systemctl start nfs-server
+  systemctl enable nfs-server
+
+  # Enable the new exports without bouncing the NFS service
+  exportfs -a
+
+  echo "[INFO] Creating 3 NFS PV {pv01..03} using from 1Gi  3Gi in ReadWriteMany or ReadWriteOnly mode and Recycle Policy."
+  for i in {1..3}
+  do
+  echo "apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0${i}
+spec:
+  capacity:
+    storage: ${i}Gi
+  accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  nfs:
+    server: localhost
+    path: /nfsvolumes/pv0${i}" | oc create -f -
+  done
+
+  touch ${ORIGIN_DIR}/configured.nfs
+fi
+
 # Installing templates into OpenShift
 if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   echo "[INFO] Installing OpenShift templates"
