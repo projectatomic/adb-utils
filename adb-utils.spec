@@ -33,11 +33,13 @@ specific service and directly including it to kickstart file.
 %{__cp} utils/* %{buildroot}/opt/adb/
 %{__cp} services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
 ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
+ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registry
 
 %files
 %{_sysconfdir}/sysconfig/openshift_option
 %{_unitdir}/openshift.service
 %{_bindir}/sccli
+%{_bindir}/add_insecure_registry
 /opt/adb/
 %doc LICENSE  README.rst
 
