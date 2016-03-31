@@ -125,7 +125,7 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   template_list=(
     #ImageStreams
     /opt/adb/openshift/templates/image-streams-rhel7.json
-    /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
+    /opt/adb/openshift/templates/jboss-image-streams.json
 
     #EAP
     /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
