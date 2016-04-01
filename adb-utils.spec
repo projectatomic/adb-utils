@@ -1,5 +1,5 @@
 Name:          adb-utils
-Version:       1.3
+Version:       1.4
 Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
@@ -44,6 +44,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Fri Apr 01 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.4-1
+- Update to 1.4 with couple of bugfix
+
 * Thu Mar 17 2016 Lalatendu Mohanty <lmohanty@redhat.com> 1.3-1
 - Adding openshift templates
 
