@@ -36,10 +36,7 @@ openssl req -new -x509 -passin file:$passfile -days 365 -key ca-key.pem -sha256 
 openssl genrsa -out server-key.pem 2048
 openssl req -subj "/CN=example.com" -new -key server-key.pem -out server.csr
 # Allow from routable local IP
-extip=`ip addr show eth1 2>/dev/null | awk 'NR==3 {print $2}' | cut -f1 -d\/`
-if [[ -z "$extip" ]]; then
-      extip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
-fi
+extip=`ip -o -4 addr show up |egrep -v ': docker|: lo' |tail -1 | awk '{print $4}' |cut -f1 -d\/`
 extipfile=extfile.cnf
 echo subjectAltName = IP:$extip > $extipfile
 openssl x509 -req -days 365 -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -passin file:$passfile -extfile $extipfile

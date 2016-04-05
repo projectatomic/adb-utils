@@ -33,6 +33,12 @@ These utilities and unit files are packaged as an RPM and included in `Atomic-De
 
 The public YUM repository is available at : http://mirror.centos.org/centos-7/7/atomic/x86_64/adb/
 
+IP Detection Note
+=================
+This code uses the last IPv4 address available from the set of configured
+addresses that are *up*.  i.e. if eth0, eth1, and eth2 are all up and
+have IPv4 addresses, the address on eth2 is used.
+
 Steps to build the SRC RPM
 ==========================
 * Create source tar ball
