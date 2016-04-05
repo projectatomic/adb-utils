@@ -2,12 +2,7 @@
 
 function get_ip_address()
 {
-    local ip=`ip addr show eth1 | awk 'NR==3 {print $2}' | cut -f1 -d /`
-
-    # In case eth1 is not configured.
-    if [ -z "$ip" ]; then
-       ip=`ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'`
-    fi
+    local ip=`ip -o -4 addr show up |egrep -v ': docker|: lo' |tail -1 | awk '{print $4}' |cut -f1 -d\/`
 
     echo $ip
 }

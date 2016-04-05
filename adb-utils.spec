@@ -1,5 +1,5 @@
 Name:          adb-utils
-Version:       1.4
+Version:       1.5
 Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
@@ -44,6 +44,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Tue Apr 05 2016 Brian Exelbierd <bex@pobox.com> 1.5-1
+- Updated IP detection routine to use the last up IPv4 address
+
 * Fri Apr 01 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.4-1
 - Update to 1.4 with couple of bugfix
 
