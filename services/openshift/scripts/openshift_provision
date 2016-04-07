@@ -126,6 +126,7 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
     #ImageStreams
     /opt/adb/openshift/templates/image-streams-rhel7.json
     /opt/adb/openshift/templates/jboss-image-streams.json
+    /opt/adb/openshift/templates/wildfly-image-streams.json
 
     #EAP
     /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
