@@ -175,6 +175,7 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
 
     #EAP
     /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
+    /opt/adb/openshift/templates/eap64-basic-s2i.json
 
     #WebApp
     /opt/adb/openshift/templates/jws30-tomcat7-mysql-persistent-s2i.json
