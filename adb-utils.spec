@@ -49,6 +49,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Wed May 18 2016 Lalatendu Mohanty <lmohanty@redhat.com> 1.6-2
+- Updating Origin images to 1.1.6 tag
+
 * Wed May 11 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 1.6-1
 - Update to 1.6 version
 

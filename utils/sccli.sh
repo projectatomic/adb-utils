@@ -72,7 +72,7 @@ function openshift()
     # Default OpenShift Image and Tag
     dockerRegistry=${DOCKER_REGISTRY:-docker.io}
     imageName=${IMAGE_NAME:-openshift/origin}
-    imageTag=${IMAGE_TAG:-v1.1.3}
+    imageTag=${IMAGE_TAG:-v1.1.6}
 
     clean_setup
 
