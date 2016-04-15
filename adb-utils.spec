@@ -1,6 +1,6 @@
 Name:          adb-utils
 Version:       1.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
 License:       GPLV2
@@ -32,7 +32,7 @@ specific service and directly including it to kickstart file.
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 %{__cp} utils/* %{buildroot}/opt/adb/
 %{__cp} services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
-ln -s /opt/adb/sccli.sh %{buildroot}%{_bindir}/sccli
+ln -s /opt/adb/sccli.py %{buildroot}%{_bindir}/sccli
 ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registry
 
 %files
@@ -44,6 +44,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Wed Apr 20 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.5-2
+- Ported sccli to python
+
 * Tue Apr 05 2016 Brian Exelbierd <bex@pobox.com> 1.5-1
 - Updated IP detection routine to use the last up IPv4 address
 
