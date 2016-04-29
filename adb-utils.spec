@@ -1,6 +1,6 @@
 Name:          adb-utils
 Version:       1.5
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
 License:       GPLV2
@@ -27,6 +27,8 @@ specific service and directly including it to kickstart file.
 
 %{__install} -pm644 services/openshift/openshift.service \
 %{buildroot}%{_unitdir}/openshift.service
+%{__install} -dm755 %{buildroot}%{_sysconfdir}/bash_completion.d/
+%{__install} -pm644 bash_completion/* %{buildroot}%{_sysconfdir}/bash_completion.d/
 %{__cp} services/openshift/openshift_option \
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
@@ -40,10 +42,16 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %{_unitdir}/openshift.service
 %{_bindir}/sccli
 %{_bindir}/add_insecure_registry
+%{_sysconfdir}/bash_completion.d/oadm
+%{_sysconfdir}/bash_completion.d/oc
+%{_sysconfdir}/bash_completion.d/openshift
 /opt/adb/
 %doc LICENSE  README.rst
 
 %changelog
+* Fri Apr 29 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.5-3
+- Add bash script auto completion for oc, oadm and openshift
+
 * Wed Apr 20 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.5-2
 - Ported sccli to python
 
