@@ -64,7 +64,7 @@ function usage()
 {
     echo "usage: sccli [service_name] || [clean]"
     echo "List of possible service_name: "
-    echo -e "\tk8s openshift"
+    echo -e "\tk8s|kubernetes openshift"
 }
 
 function openshift()
@@ -80,11 +80,13 @@ function openshift()
     sudo sed -i.back "/^IMAGE=*/cIMAGE=\"${dockerRegistry}/${imageName}\:${imageTag}\"" /etc/sysconfig/openshift_option
 
     # ensure the docker containers are present
-    docker pull ${dockerRegistry}/${imageName}:${imageTag}
-    docker pull ${dockerRegistry}/${imageName}-haproxy-router:${imageTag}
-    docker pull ${dockerRegistry}/${imageName}-deployer:${imageTag}
-    docker pull ${dockerRegistry}/${imageName}-docker-registry:${imageTag}
-    docker pull ${dockerRegistry}/${imageName}-sti-builder:${imageTag}
+    if [[ "$(docker images -q  ${dockerRegistry}/${imageName}:${imageTag} 2> /dev/null)" == "" ]]; then
+        docker pull ${dockerRegistry}/${imageName}:${imageTag}
+        docker pull ${dockerRegistry}/${imageName}-haproxy-router:${imageTag}
+        docker pull ${dockerRegistry}/${imageName}-deployer:${imageTag}
+        docker pull ${dockerRegistry}/${imageName}-docker-registry:${imageTag}
+        docker pull ${dockerRegistry}/${imageName}-sti-builder:${imageTag}
+    fi
 
     sudo systemctl enable openshift
     sudo systemctl start openshift
@@ -92,7 +94,7 @@ function openshift()
 
 if [ "$#" -ne 1 ]; then
     usage
-elif [ "$1" == "k8s" ]; then
+elif [ "$1" == "k8s" ] || [ "$1" == "kubernetes" ]; then
     single_node_k8s_setup
 elif [ "$1" == "openshift" ]; then
     openshift
