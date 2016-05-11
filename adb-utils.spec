@@ -28,7 +28,7 @@ specific service and directly including it to kickstart file.
 %{__install} -pm644 services/openshift/openshift.service \
 %{buildroot}%{_unitdir}/openshift.service
 %{__install} -dm755 %{buildroot}%{_sysconfdir}/bash_completion.d/
-%{__install} -pm644 bash_completion/* %{buildroot}%{_sysconfdir}/bash_completion.d/
+%{__install} -pm644 bash_completions/* %{buildroot}%{_sysconfdir}/bash_completion.d/
 %{__cp} services/openshift/openshift_option \
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
