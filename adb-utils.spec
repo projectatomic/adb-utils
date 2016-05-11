@@ -1,6 +1,6 @@
 Name:          adb-utils
-Version:       1.5
-Release:       3%{?dist}
+Version:       1.6
+Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
 License:       GPLV2
@@ -49,6 +49,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Wed May 11 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 1.6-1
+- Update to 1.6 version
+
 * Fri Apr 29 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> 1.5-3
 - Add bash script auto completion for oc, oadm and openshift
 
