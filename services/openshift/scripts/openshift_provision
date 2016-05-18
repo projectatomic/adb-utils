@@ -43,7 +43,8 @@ done
 # Create Docker Registry
 if [ ! -f ${ORIGIN_DIR}/configured.registry ]; then
   echo "[INFO] Configuring Docker Registry"
-  oadm registry --create --credentials=${OPENSHIFT_DIR}/openshift-registry.kubeconfig || exit 1
+  # oadm and oc both can able to create registry (check oc/oadm --help)
+  oadm registry --create --service-account=registry || exit 1
   oadm policy add-scc-to-group anyuid system:authenticated || exit 1
   touch ${ORIGIN_DIR}/configured.registry
 fi
@@ -51,15 +52,8 @@ fi
 # For router, we have to create service account first and then use it for router creation.
 if [ ! -f ${ORIGIN_DIR}/configured.router ]; then
   echo "[INFO] Configuring HAProxy router"
-  echo '{"kind":"ServiceAccount","apiVersion":"v1","metadata":{"name":"router"}}' \
-    | oc create -f -
-  oc get scc privileged -o json \
-    | sed '/\"users\"/a \"system:serviceaccount:default:router\",'  \
-    | oc replace scc privileged -f -
-  oadm router --create \
-    --expose-metrics=true \
-    --credentials=${OPENSHIFT_DIR}/openshift-router.kubeconfig \
-    --service-account=router
+  oadm policy add-scc-to-user privileged system:serviceaccount:default:router || exit 1
+  oadm router --service-account=router --expose-metrics=true || exit 1
   touch ${ORIGIN_DIR}/configured.router
 
   # Get machine IP address
@@ -205,3 +199,4 @@ if [ ! -f ${ORIGIN_DIR}/configured.user ]; then
         --description='This is a sample project to demonstrate OpenShift v3' &>/dev/null"
   touch ${ORIGIN_DIR}/configured.user
 fi
+
