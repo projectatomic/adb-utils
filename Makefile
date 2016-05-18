@@ -15,12 +15,11 @@
 
 TODAY := $(shell date +%Y%m%d)
 UPSTREAM_NAME := adb-utils
-VERSION := 20110506
+VERSION := 1.6
 DOWNSTREAM_NAME := cdk-utils
 SOURCE := https://github.com/projectatomic/${UPSTREAM_NAME}/archive/v${VERSION}.tar.gz
 MASTER_SOURCE := https://github.com/projectatomic/adb-utils/archive/master.tar.gz
-UPSTREAM_IMAGE_VERSION := "v1\.1\.1"
-DOWNSTREAM_IMAGE_VERSION := "v3\.1\.1\.6"
+DOWNSTREAM_IMAGE_VERSION := "v3\.2\.0\.20"
 
 .PHONY: clean upstream downstream master
 
@@ -35,9 +34,9 @@ downstream:
 
 	# Change to downstream name and source
 	sed -i \
-	    -e "s|Name:\(\s\+\)\(.*\)|Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
-	    -e "s|Source0:\(\s\+\)\(.*\)|Source0:\1\%{name}-\%{version}\.tar\.gz|" \
-	    -e "s|Version:\(\s\+\)\(.*\)|Version:\1${VERSION}|"
+	    -e "s|^Name:\(\s\+\)\(.*\)$ |Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
+	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
+	    -e "s|^Version:\(\s\+\)\(.*\)$ |Version:\1${VERSION}|"
 
 	mv ${UPSTREAM_NAME}.spec ${DOWNSTREAM_NAME}.spec
 	curl -sL -O ${SOURCE}
@@ -46,19 +45,20 @@ downstream:
 
 	# Changes to openshift_option for downstream
 	sed -i -e \
-	    "s|IMAGE=\"docker\.io/openshift/origin:${UPSTREAM_IMAGE_VERSION}\"|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
+	    "s|^IMAGE=\(.*\)$|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
 	    ${DOWNSTREAM_NAME}-${VERSION}/services/openshift/openshift_option 
 
 	# Changes to sccli for downstream
 	sed -i -e \
-	    "s|DOCKER_REGISTRY = \"docker\.io\"|DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
+	    "s|^DOCKER_REGISTRY =\(\s\+\)\(.*\)$ |DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
 	    ${DOWNSTREAM_NAME}-${VERSION}/utils/sccli.py \
-	    -e "s|IMAGE_NAME = \"openshift/origin\"|IMAGE_NAME = \"openshift3/ose\"|" \
-	    -e "s|IMAGE_TAG = \"${UPSTREAM_IMAGE_VERSION}\"|IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
+	    -e "s|^IMAGE_NAME =\(\s\+\)\(.*\)$ |IMAGE_NAME = \"openshift3/ose\"|" \
+	    -e "s|^IMAGE_TAG =\(\s\+\)\(.*\)$ |IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
 
 	tar -cvf ${DOWNSTREAM_NAME}-${VERSION}.tar.gz ${DOWNSTREAM_NAME}-${VERSION} && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}
-	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" --define "dist .el7" -bs ${DOWNSTREAM_NAME}.spec && \
+	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" \
+	    --define "dist .el7" -bs ${DOWNSTREAM_NAME}.spec && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}.tar.gz
 	git checkout ${UPSTREAM_NAME}.spec
 
@@ -66,9 +66,9 @@ master:
 
 	# Change to downstream name and source
 	sed -i \
-	    -e "s|Name:\(\s\+\)\(.*\)|Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
-	    -e "s|Source0:\(\s\+\)\(.*\)|Source0:\1\%{name}-\%{version}\.tar\.gz|" \
-	    -e "s|Version:\(\s\+\)\(.*\)|Version:\1${VERSION}|"
+	    -e "s|^Name:\(\s\+\)\(.*\)$ |Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
+	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
+	    -e "s|^Version:\(\s\+\)\(.*\)$ |Version:\1${VERSION}|"
 
 	mv ${UPSTREAM_NAME}.spec ${DOWNSTREAM_NAME}.spec
 	curl -sL -O ${MASTER_SOURCE}
@@ -77,19 +77,20 @@ master:
 
 	# Changes to openshift_option for downstream
 	sed -i -e \
-	    "s|IMAGE=\"docker\.io/openshift/origin:${UPSTREAM_IMAGE_VERSION}\"|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
+	    "s|IMAGE=\(.*\)|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
 	    ${DOWNSTREAM_NAME}-${VERSION}/services/openshift/openshift_option 
 
 	# Changes to sccli for downstream
 	sed -i -e \
-	    "s|DOCKER_REGISTRY = \"docker\.io\"|DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
+	    "s|^DOCKER_REGISTRY =\(\s\+\)\(.*\)$ |DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
 	    ${DOWNSTREAM_NAME}-${VERSION}/utils/sccli.py \
-	    -e "s|IMAGE_NAME = \"openshift/origin\"|IMAGE_NAME = \"openshift3/ose\"|" \
-	    -e "s|IMAGE_TAG = \"${UPSTREAM_IMAGE_VERSION}\"|IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
+	    -e "s|^IMAGE_NAME =\(\s\+\)\(.*\)$ |IMAGE_NAME = \"openshift3/ose\"|" \
+	    -e "s|^IMAGE_TAG =\(\s\+\)\(.*\)$ |IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
 
 	tar -cvf ${DOWNSTREAM_NAME}-${VERSION}.tar.gz ${DOWNSTREAM_NAME}-${VERSION} && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}
-	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" --define "dist .el7" -bs ${DOWNSTREAM_NAME}.spec && \
+	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" \
+	    --define "dist .el7" -bs ${DOWNSTREAM_NAME}.spec && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}.tar.gz
 	git checkout ${UPSTREAM_NAME}.spec
 
