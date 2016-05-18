@@ -13,7 +13,6 @@
 # 
 # Author: Praveen Kumar <kumarpraveen.nitdgp@gmail.com>
 
-TODAY := $(shell date +%Y%m%d)
 UPSTREAM_NAME := adb-utils
 VERSION := 1.6
 DOWNSTREAM_NAME := cdk-utils
@@ -26,9 +25,16 @@ DOWNSTREAM_IMAGE_VERSION := "v3\.2\.0\.20"
 
 upstream:
 
-	curl -sL -O ${SOURCE}
+	# This will update source0 as tarball itself because we are creating tarball locally and also update version
+	# as per VERSION variable.
+	sed -i ${UPSTREAM_NAME}.spec \
+	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
+	    -e "s|^Version:\(\s\+\)\(.*\)$ |Version:\1${VERSION}|"
+	git archive --format tar.gz --prefix ${UPSTREAM_NAME}-${VERSION}/ HEAD -o ${UPSTREAM_NAME}-${VERSION}.tar.gz
+	rm -fr ${UPSTREAM_NAME}-${VERSION}
 	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" --define "dist .el7" -bs ${UPSTREAM_NAME}.spec && \
 	    rm -fr ${UPSTREAM_NAME}-${VERSION}.tar.gz
+	git checkout ${UPSTREAM_NAME}.spec
 
 downstream:
 
@@ -71,9 +77,8 @@ master:
 	    -e "s|^Version:\(\s\+\)\(.*\)$ |Version:\1${VERSION}|"
 
 	mv ${UPSTREAM_NAME}.spec ${DOWNSTREAM_NAME}.spec
-	curl -sL -O ${MASTER_SOURCE}
-	tar -xvf master.tar.gz && rm master.tar.gz
-	mv ${UPSTREAM_NAME}-master ${DOWNSTREAM_NAME}-${VERSION}
+	mkdir -p ${DOWNSTREAM_NAME}-${VERSION}
+	tar cf - --exclude=${DOWNSTREAM_NAME}-${VERSION} --exclude=.git . | (cd ${DOWNSTREAM_NAME}-${VERSION} && tar xvf - )
 
 	# Changes to openshift_option for downstream
 	sed -i -e \
@@ -98,3 +103,5 @@ clean:
 
 	rm -fr *.tar.gz
 	rm -fr *.src.rpm
+	rm -fr cdk-utils.spec
+
