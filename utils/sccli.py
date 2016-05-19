@@ -24,7 +24,7 @@ Return Code:
 
 Sample Usage:
     $ python sccli.py -h
-    $ sudo python sccli.py kubernets stop
+    $ sudo python sccli.py kubernetes stop
     $ echo $? (if success return 0)
     $ sudo python sccli.py openshift start
     docker.io/openshift/origin:v1.1.9 Not Pulled (Message in stderr)

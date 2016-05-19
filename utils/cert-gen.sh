@@ -8,7 +8,7 @@ if [ -e $DOCKER_CERT_PATH/ca.pem ]; then
 fi
 
 function randomString {
-        # if a param was passed, it's the length of the string we want
+        # If a param was passed, it's the length of the string we want
         if [[ -n $1 ]] && [[ "$1" -lt 20 ]]; then
                 local myStrLength=$1;
         else
@@ -52,12 +52,12 @@ openssl x509 -req -days 365 -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreat
 
 # set the cert path as configured in /etc/sysconfig/docker
 
-## Move files into place
+# Move files into place
 mv ca.pem $DOCKER_CERT_PATH
 mv server-cert.pem $DOCKER_CERT_PATH
 mv server-key.pem $DOCKER_CERT_PATH
 
-# since the default user is vagrant and it can run docker without sudo
+# Since the default user is vagrant and it can run docker without sudo
 CLIENT_SIDE_CERT_PATH=/home/vagrant/.docker
 
 mkdir -p $CLIENT_SIDE_CERT_PATH

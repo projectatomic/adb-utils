@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # sccli - Service Change CLI
-# Script to switch openshift from k8s or vice-versa 
+# Script to switch openshift from k8s or vice-versa
 
 function single_node_k8s_setup ()
 {
@@ -43,8 +43,8 @@ function clean_setup ()
 
     if $(systemctl is-active kubelet > /dev/null); then
         echo "Stopping the Kubernetes services"
-        #enable Kubernetes master services
-        #etcd kube-apiserver kube-controller-manager kube-scheduler
+        # Enable Kubernetes master services
+        # etcd kube-apiserver kube-controller-manager kube-scheduler
         sudo systemctl disable etcd kube-apiserver kube-controller-manager kube-scheduler
         sudo systemctl stop kube-apiserver kube-controller-manager kube-scheduler
         sudo systemctl disable kube-proxy kubelet
@@ -79,7 +79,7 @@ function openshift()
     # Setup the systemd environment - desired image may have changed
     sudo sed -i.back "/^IMAGE=*/cIMAGE=\"${dockerRegistry}/${imageName}\:${imageTag}\"" /etc/sysconfig/openshift_option
 
-    # ensure the docker containers are present
+    # Ensure the docker containers are present
     docker pull ${dockerRegistry}/${imageName}:${imageTag}
     docker pull ${dockerRegistry}/${imageName}-haproxy-router:${imageTag}
     docker pull ${dockerRegistry}/${imageName}-deployer:${imageTag}

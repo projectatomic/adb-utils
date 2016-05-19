@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#export get_ip_address
+# Export get_ip_address
 . /opt/adb/openshift/get_ip_address
 
 # Prepare, configure and start OpenShift
