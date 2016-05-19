@@ -102,7 +102,7 @@ if [ ! -f ${ORIGIN_DIR}/secured.registry ]; then
   mkdir -p /etc/docker/certs.d/$REGISTRY_ROUTE
   cp $OPENSHIFT_DIR/ca.crt /etc/docker/certs.d/$REGISTRY_ROUTE
 
-  # add "tls termination: passthroug" to already existing docker registry route
+  # Add "tls termination: passthroug" to already existing docker registry route
   oc get route docker-registry -o json  | sed -e 's/\("spec": {\)/\1 "tls": {"termination": "passthrough"},/g' | oc replace -f -
 fi
 
@@ -162,16 +162,16 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   # - jboss-openshift/application-templates
   ose_tag=ose-v1.2.0
   template_list=(
-    #ImageStreams
+    # ImageStreams
     /opt/adb/openshift/templates/image-streams-rhel7.json
     /opt/adb/openshift/templates/jboss-image-streams.json
     /opt/adb/openshift/templates/wildfly-image-streams.json
 
-    #EAP
+    # EAP
     /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
     /opt/adb/openshift/templates/eap64-basic-s2i.json
 
-    #WebApp
+    # WebApp
     /opt/adb/openshift/templates/jws30-tomcat7-mysql-persistent-s2i.json
     /opt/adb/openshift/templates/cakephp.json
     /opt/adb/openshift/templates/cakephp-mysql.json
@@ -199,4 +199,3 @@ if [ ! -f ${ORIGIN_DIR}/configured.user ]; then
         --description='This is a sample project to demonstrate OpenShift v3' &>/dev/null"
   touch ${ORIGIN_DIR}/configured.user
 fi
-
