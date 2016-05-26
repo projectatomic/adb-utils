@@ -11,13 +11,14 @@ adb-utils provides the following content to the ADB Vagrant box:
 
 * SCCLI
 
-  The Service Change CLI (sccli) provides a single point of entry for managing services inside of the ADB. The Kubernetes and Openshift services can not run parallely in ADB because of port conflicts, the sccli provides an easy way to change and run a specific service.
+  The Service Change CLI (sccli) provides a single point of entry for managing services inside of the ADB. The Kubernetes and OpenShift services can not run simultaneously in the ADB because of port conflicts, the sccli provides an easy way to change and run a specific service.
 
-  This is primarily of interest to users who use the ADB as a VM they access via ``vagrant ssh``.
+  This is primarily of interest to users who use the ADB as a VM, which they access via ``vagrant ssh``.
 
-  sccli enables the user to switch services easily in a running vagrant box. Currently ``sccli`` only provides an interface for managing OpenShift or a single node Kubernetes instance.
+  sccli enables the user to switch services easily in a running vagrant box. Currently, ``sccli`` only provides an interface for managing OpenShift or a single node Kubernetes instance.
 
-  The ``sccli`` command does not generate any output, but provides the correct, specific return code which is consumed by the `vagrant-service-manager <https://github.com/projectatomic/vagrant-service-manager>`_. The vagrant-service-manager plugin calls upon the `sccli` to manage the services inside of the ADB.
+  The ``sccli`` command does not generate any output, but provides the correct, specific return code which is consumed by the `vagrant-service-manager <https://github.com/projectatomic/vagrant-service-manager>`_. The vagrant-service-manager plugin calls upon the ``sccli`` to manage the services inside of the ADB.
+
 
   The usage of sccli is as below::
 
@@ -40,30 +41,30 @@ adb-utils provides the following content to the ADB Vagrant box:
   For instance, to start Kubernetes service, use::
 
    # sccli kubernetes start
-   # echo $
+   # echo $?
 
 
-  ``echo $`` gives you the return code for the command and feeds it to the vagrant-service-manager. The vagrant-service-manager makes decisions based on these return codes.
-
+  ``echo $?`` gives you the return code for the command and feeds it to the vagrant-service-manager. The vagrant-service-manager makes decisions based on these return codes.
   If the return code is 0, it implies that the service has behaved (started/restarted/stopped) as expected. If the return status is anything other than 0, it implies that the service has failed to behave as expected.
 
 
-  sccli accepts environment variables to modify how services are configured and deployed.  For the OpenShift service, the following environment variables are recognized:
+  sccli accepts environment variables to modify how services are configured and deployed.  
+  For the OpenShift service, the following environment variables are recognized:
 
-  ``DOCKER_REGISTRY``, defines which registry the OpenShift containers should be pulled from.  Default value = ``“docker.io"``
+  ``DOCKER_REGISTRY``, defines which registry the OpenShift containers should be pulled from. The default value is ``"docker.io"``.
 
-  ``IMAGE_NAME``, defines which OpenShift image should be used.  Default value = ``“openshift/origin”``
+  ``IMAGE_NAME``, defines which OpenShift image should be used. The default value is ``"openshift/origin"``.
 
-  ``IMAGE_TAG``, defines which version of OpenShift should be used.  Default value = ``“v1.1.1”``
+  ``IMAGE_TAG``, defines which version of OpenShift should be used. The default value is ``"v1.1.1"``.
 
+  Thus, the version of OpenShift defaults to the containerized version at ``docker.io/openshift/origin:v1.1.1``.  If you desire a different version, pass the ``DOCKER_REGISTRY``, ``IMAGE_NAME`` and/or ``IMAGE_TAG`` environment variables.  
+  
   An example of changing these would be::
 
-   $ sudo DOCKER_REGISTRY=”registry.mycompany.com” IMAGE_NAME=”openshift_gold” IMAGE_TAG=”v2016-01-03” sccli openshift start``
+   $ sudo DOCKER_REGISTRY="registry.mycompany.com" IMAGE_NAME="openshift_gold" IMAGE_TAG="v2016-01-03" sccli openshift start
 
-
-  **NOTE:** The version of OpenShift defaults to the containerized version at ``docker.io/openshift/origin:v1.1.1``.  If you desire a different version, pass the ``DOCKER_REGISTRY``, ``IMAGE_NAME`` and/or ``IMAGE_TAG`` environment variables.  
-
-  For example, to use the ``latest`` version::
+ 
+  Or, to use the ``latest`` version::
 
      $ IMAGE_TAG="latest" sccli openshift start
 
@@ -82,11 +83,11 @@ Steps to build the SRC RPM
 ==========================
 * Create source tar ball
 
-  spectool -g -R adb-utils.spec
+  ``spectool -g -R adb-utils.spec``
 
 * Build the SRPM for el7
 
-  rpmbuild --define "_srcrpmdir $PWD" --define "dist .el7" -bs adb-utils.spec
+  ``rpmbuild --define "_srcrpmdir $PWD" --define "dist .el7" -bs adb-utils.spec``
 
 Interested in Contributing to this Project?
 ===========================================
