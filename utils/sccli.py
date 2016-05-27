@@ -21,6 +21,7 @@ Standard Exit Codes (bash): http://tldp.org/LDP/abs/html/exitcodes.html
 Return Code:
     110 - Service is not running
     111 - Docker image not pulled
+    112 - openshift_option file not found or it's syntax changed.
 
 Sample Usage:
     $ python sccli.py -h
@@ -39,9 +40,7 @@ import time
 from argparse import ArgumentParser
 
 OPERATION = ['start', 'status', 'restart', 'stop']
-DOCKER_REGISTRY = "docker.io"
-IMAGE_NAME = "openshift/origin"
-IMAGE_TAG = "v1.1.3"
+OPENSHIFT_OPTION = '/etc/sysconfig/openshift_option'
 
 
 def system(cmd):
@@ -55,6 +54,19 @@ def system(cmd):
     out, err = ret.communicate()
     returncode = ret.returncode
     return out, err, returncode
+
+def get_registry_image_tag_defaults():
+    try:
+        with open(OPENSHIFT_OPTION) as fh:
+            file_content = fh.readlines()
+        for content in file_content:
+            if 'IMAGE' in content:
+                content = content.strip()
+                docker_registry = content.split('/', 1)[0].split('=')[-1]
+                image_name, image_tag = tuple(content.split('/', 1)[1].split(':'))
+                return (docker_registry, image_name, image_tag)
+    except IOError as err:
+        return
 
 def service_status(service_name):
     if service_name == "kubernetes":
@@ -131,12 +143,16 @@ def vagrant_box_variant():
         return (err, 37)
 
 def pull_openshift_images():
+    try:
+        DOCKER_REGISTRY, IMAGE_NAME, IMAGE_TAG = get_registry_image_tag_defaults()
+    except ValueError:
+        return("Not able to find: %s or syntax changed" % OPENSHIFT_OPTION, 112)
     docker_registry = os.getenv('DOCKER_REGISTRY', DOCKER_REGISTRY)
     image_name = os.getenv('IMAGE_NAME', IMAGE_NAME)
     image_tag = os.getenv('IMAGE_TAG', IMAGE_TAG)
     if system(('sed -i.back "/^IMAGE=*/cIMAGE=\"%s/%s\:%s\""'
-            ' /etc/sysconfig/openshift_option') % (docker_registry, image_name, image_tag))[2]:
-        return ("Permisison denined: /etc/sysconfig/openshift_option", 37)
+            ' %s') % (docker_registry, image_name, image_tag, OPENSHIFT_OPTION))[2]:
+        return ("Permisison denined: %s" % OPENSHIFT_OPTION, 37)
     image_pull_list = ("{0}/{1}:{2} "
                        "{0}/{1}-haproxy-router:{2} "
                        "{0}/{1}-deployer:{2} "
