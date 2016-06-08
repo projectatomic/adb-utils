@@ -5,6 +5,8 @@
 set -o pipefail
 set -o nounset
 
+source /etc/os-release
+
 export ORIGIN_DIR="/var/lib/openshift"
 export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
@@ -161,25 +163,17 @@ if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   # - openshift/nodejs-ex
   # - jboss-openshift/application-templates
   ose_tag=ose-v1.2.0
-  template_list=(
-    # ImageStreams
-    /opt/adb/openshift/templates/image-streams-rhel7.json
-    /opt/adb/openshift/templates/jboss-image-streams.json
-    /opt/adb/openshift/templates/wildfly-image-streams.json
-
-    # EAP
-    /opt/adb/openshift/templates/eap64-mysql-persistent-s2i.json
-    /opt/adb/openshift/templates/eap64-basic-s2i.json
-
-    # WebApp
-    /opt/adb/openshift/templates/jws30-tomcat7-mysql-persistent-s2i.json
-    /opt/adb/openshift/templates/cakephp.json
-    /opt/adb/openshift/templates/cakephp-mysql.json
-
-    # Node.js
-    /opt/adb/openshift/templates/nodejs-mongodb.json
-    /opt/adb/openshift/templates/nodejs.json
-  )
+  template_list=$(find /opt/adb/openshift/templates/common -type f)
+  template_list_adb=$(find /opt/adb/openshift/templates/adb -type f)
+  template_list_cdk=$(find /opt/adb/openshift/templates/cdk -type f)
+  case "${VARIANT_ID}" in
+    "adb")
+      template_list+=" ${template_list_adb}";;
+    "cdk")
+      template_list+=" ${template_list_cdk}";;
+    *)
+      (>&2 echo "[WARN] Unknown VARIANT_ID=\"${VARIANT_ID}\"!");;
+  esac
 
   for template in ${template_list[@]}; do
     echo "[INFO] Importing template ${template}"

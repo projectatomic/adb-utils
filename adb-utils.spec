@@ -33,7 +33,7 @@ specific service and directly including it to kickstart file.
 %{buildroot}%{_sysconfdir}/sysconfig/openshift_option
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 %{__cp} utils/* %{buildroot}/opt/adb/
-%{__cp} services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
+%{__cp} -r services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
 ln -s /opt/adb/sccli.py %{buildroot}%{_bindir}/sccli
 ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registry
 
