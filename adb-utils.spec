@@ -1,5 +1,5 @@
 Name:          adb-utils
-Version:       1.7
+Version:       1.8
 Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
@@ -49,6 +49,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.rst
 
 %changelog
+* Fri Jun 10 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 1.8-1
+- Update to 1.8 version
+
 * Fri May 27 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 1.7-1
 - Update to 1.7 version
 
