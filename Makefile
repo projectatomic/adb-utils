@@ -14,11 +14,10 @@
 # Author: Praveen Kumar <kumarpraveen.nitdgp@gmail.com>
 
 UPSTREAM_NAME := adb-utils
-VERSION := 1.6
+VERSION := 1.7
 DOWNSTREAM_NAME := cdk-utils
 SOURCE := https://github.com/projectatomic/${UPSTREAM_NAME}/archive/v${VERSION}.tar.gz
 MASTER_SOURCE := https://github.com/projectatomic/adb-utils/archive/master.tar.gz
-DOWNSTREAM_IMAGE_VERSION := "v3\.2\.0\.20"
 
 .PHONY: clean upstream downstream master
 
@@ -48,19 +47,7 @@ downstream:
 	curl -sL -O ${SOURCE}
 	tar -xvf v${VERSION}.tar.gz && rm v${VERSION}.tar.gz
 	mv ${UPSTREAM_NAME}-${VERSION} ${DOWNSTREAM_NAME}-${VERSION}
-
-	# Changes to openshift_option for downstream
-	sed -i -e \
-	    "s|^IMAGE=\(.*\)$|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
-	    ${DOWNSTREAM_NAME}-${VERSION}/services/openshift/openshift_option 
-
-	# Changes to sccli for downstream
-	sed -i -e \
-	    "s|^DOCKER_REGISTRY =\(\s\+\)\(.*\)$ |DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
-	    ${DOWNSTREAM_NAME}-${VERSION}/utils/sccli.py \
-	    -e "s|^IMAGE_NAME =\(\s\+\)\(.*\)$ |IMAGE_NAME = \"openshift3/ose\"|" \
-	    -e "s|^IMAGE_TAG =\(\s\+\)\(.*\)$ |IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
-
+	
 	tar -cvf ${DOWNSTREAM_NAME}-${VERSION}.tar.gz ${DOWNSTREAM_NAME}-${VERSION} && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}
 	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" \
@@ -79,18 +66,6 @@ master:
 	mv ${UPSTREAM_NAME}.spec ${DOWNSTREAM_NAME}.spec
 	mkdir -p ${DOWNSTREAM_NAME}-${VERSION}
 	tar cf - --exclude=${DOWNSTREAM_NAME}-${VERSION} --exclude=.git . | (cd ${DOWNSTREAM_NAME}-${VERSION} && tar xvf - )
-
-	# Changes to openshift_option for downstream
-	sed -i -e \
-	    "s|IMAGE=\(.*\)|IMAGE=\"registry\.access\.redhat\.com/openshift3/ose:${DOWNSTREAM_IMAGE_VERSION}\"|" \
-	    ${DOWNSTREAM_NAME}-${VERSION}/services/openshift/openshift_option 
-
-	# Changes to sccli for downstream
-	sed -i -e \
-	    "s|^DOCKER_REGISTRY =\(\s\+\)\(.*\)$ |DOCKER_REGISTRY = \"registry\.access\.redhat\.com\"|" \
-	    ${DOWNSTREAM_NAME}-${VERSION}/utils/sccli.py \
-	    -e "s|^IMAGE_NAME =\(\s\+\)\(.*\)$ |IMAGE_NAME = \"openshift3/ose\"|" \
-	    -e "s|^IMAGE_TAG =\(\s\+\)\(.*\)$ |IMAGE_TAG = \"${DOWNSTREAM_IMAGE_VERSION}\"|"
 
 	tar -cvf ${DOWNSTREAM_NAME}-${VERSION}.tar.gz ${DOWNSTREAM_NAME}-${VERSION} && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}
