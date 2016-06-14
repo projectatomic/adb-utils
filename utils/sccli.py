@@ -37,7 +37,10 @@ import os
 import subprocess
 import sys
 import time
+import netifaces
+import socket
 from argparse import ArgumentParser
+from urllib import quote_plus
 
 OPERATION = ['start', 'status', 'restart', 'stop']
 OPENSHIFT_OPTION = '/etc/sysconfig/openshift_option'
@@ -54,6 +57,48 @@ def system(cmd):
     out, err = ret.communicate()
     returncode = ret.returncode
     return out, err, returncode
+
+def get_all_interface_ip():
+    interface_list = ''
+    for interface in netifaces.interfaces():
+        addr = netifaces.ifaddresses(interface).get(netifaces.AF_INET)
+        if addr:
+            interface_list += "%s," % addr[0].get('addr')
+    return interface_list
+
+def set_proxy():
+    proxy = os.getenv('PROXY', '')
+    if proxy:
+        interface_ip_list = get_all_interface_ip()
+        predefine_no_proxy_list = ".xip.io,172.30.0.0/16,172.17.0.0/16,%s" % socket.gethostname()
+        proxy_user = quote_plus(os.getenv('PROXY_USER',''))
+        if proxy_user:
+            proxy_password = quote_plus(os.getenv('PROXY_PASSWORD',''))
+            http_proxy_url = "http://%s:%s@%s" % (proxy_user, proxy_password, proxy)
+            https_proxy_url = "https://%s:%s@%s" % (proxy_user, proxy_password, proxy)
+        else:
+            http_proxy_url = "http://%s" % proxy
+            https_proxy_url = "https://%s" % proxy
+        # openshift proxy setup
+        if system(('sed -i -e "/^#HTTP_PROXY=*/cHTTP_PROXY=%s"'
+                   ' -e "/^#HTTPS_PROXY=*/cHTTPS_PROXY=%s"'
+                   ' -e "/^#NO_PROXY=*/cNO_PROXY=%s%s"'
+                ' %s') % (http_proxy_url, http_proxy_url, interface_ip_list,
+                          predefine_no_proxy_list, OPENSHIFT_OPTION))[2]:
+            return ("Permisison denined: %s" % OPENSHIFT_OPTION)
+        # docker daemon proxy setup
+        if not os.path.isdir('/etc/systemd/system/docker.service.d'):
+            subprocess.call("mkdir /etc/systemd/system/docker.service.d", shell=True)
+        env_file_content = ('[Service]\n'
+                'Environment="HTTP_PROXY=%s" "NO_PROXY=localhost,127.0.0.1,::1,.xip.io"\n') \
+                        % (http_proxy_url)
+        try:
+            with open('/etc/systemd/system/docker.service.d/http-proxy.conf', 'w') as fh:
+                fh.write(env_file_content)
+            subprocess.call('systemctl daemon-reload', shell=True)
+            return subprocess.call('systemctl restart docker', shell=True)
+        except IOError as err:
+            return err
 
 def get_registry_image_tag_defaults():
     try:
@@ -168,6 +213,8 @@ def pull_openshift_images():
     return ('', 0)
 
 def service_start(service_name):
+    if set_proxy():
+        return ("Proxy setup failed", 113)
     if service_name == "kubernetes":
         service_stop("openshift")
         # This is required because openshift does create kubeconfig for 8443 port
@@ -188,7 +235,11 @@ def service_start(service_name):
         output, returncode = pull_openshift_images()
         if returncode:
             return (output, returncode)
-        return system("systemctl start openshift")[1:]
+        output, returncode =  system("systemctl start openshift")[1:]
+        if output:
+            return (output, returncode)
+        # This is required because of proxy configurations.
+        return system("systemctl restart docker")[1:]
     if service_name == "docker":
         return system("systemctl start docker")[1:]
 
