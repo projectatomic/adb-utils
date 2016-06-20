@@ -21,6 +21,7 @@ specific service and directly including it to kickstart file.
 %install
 %{__mkdir_p} %{buildroot}/opt/adb/openshift
 %{__mkdir_p} %{buildroot}/opt/adb/openshift/templates
+%{__mkdir_p} %{buildroot}/opt/adb/openshift/metrics
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/sysconfig/
 %{__mkdir_p} %{buildroot}%{_unitdir}
 %{__mkdir_p} %{buildroot}%{_bindir}
@@ -34,6 +35,7 @@ specific service and directly including it to kickstart file.
 %{__cp} services/openshift/scripts/* %{buildroot}/opt/adb/openshift/
 %{__cp} utils/* %{buildroot}/opt/adb/
 %{__cp} -r services/openshift/templates/* %{buildroot}/opt/adb/openshift/templates/
+%{__cp} services/openshift/metrics/* %{buildroot}/opt/adb/openshift/metrics/
 ln -s /opt/adb/sccli.py %{buildroot}%{_bindir}/sccli
 ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registry
 

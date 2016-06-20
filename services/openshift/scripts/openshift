@@ -104,6 +104,10 @@ if [ ! -f $master_config ]; then
     rm_openshift_container
 fi
 
+if [ ${METRICS} == 'true' ]; then
+    sed -i.orig -e "s/\(.*metricsPublicURL:\).*/\1 https:\/\/hawkular-metrics.${OPENSHIFT_SUBDOMAIN}\/hawkular\/metrics/g" ${master_config}
+fi
+
 # Now we start the server pointing to the prepared config files
 echo "[INFO] Starting OpenShift server"
 start_openshift '' --master-config="${master_config}" --node-config="${node_config}"
