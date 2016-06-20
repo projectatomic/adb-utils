@@ -3,3 +3,4 @@
 # Modify these options if you want to change openshift hostname
 OPENSHIFT_SUBDOMAIN="$(hostname).$(/opt/adb/openshift/get_ip_address).xip.io"
 IMAGE="docker.io/openshift/origin:latest"
+METRICS=false

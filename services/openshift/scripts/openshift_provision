@@ -153,6 +153,22 @@ spec:
   touch ${ORIGIN_DIR}/configured.nfs
 fi
 
+# Enable Metrics as per Enviornment variable.
+if [ ${METRICS} == 'true' ]; then
+    if [ ! -f ${ORIGIN_DIR}/metrics.configured ]; then
+        echo "[INFO] Creating and configuring metrics"
+        oc create -f /opt/adb/openshift/metrics/metrics-deployer-setup.yaml -n openshift-infra
+        oc adm policy add-role-to-user edit system:serviceaccount:openshift-infra:metrics-deployer -n openshift-infra
+        oc adm policy add-cluster-role-to-user cluster-reader system:serviceaccount:openshift-infra:heapster -n openshift-infra
+        oc secrets new metrics-deployer nothing=/dev/null -n openshift-infra
+        oc process -f /opt/adb/openshift/metrics/metrics.yaml -v HAWKULAR_METRICS_HOSTNAME=hawkular-metrics.${OPENSHIFT_SUBDOMAIN},USE_PERSISTENT_STORAGE=false | oc create -n openshift-infra -f -
+        echo ""
+        echo "[INFO] Please visit https:\/\/hawkular-metrics.${OPENSHIFT_SUBDOMAIN} and accept the ssl certificate for the metrics to work"
+        echo ""
+        touch ${ORIGIN_DIR}/metrics.configured
+    fi
+fi
+
 # Installing templates into OpenShift
 if [ ! -f ${ORIGIN_DIR}/configured.templates ]; then
   echo "[INFO] Installing OpenShift templates"
