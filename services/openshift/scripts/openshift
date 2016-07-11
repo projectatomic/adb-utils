@@ -73,6 +73,14 @@ wait_for_config_files() {
 master_config=${OPENSHIFT_DIR}/master-config.yaml
 node_config=${ORIGIN_DIR}/openshift.local.config/node-$(hostname)/node-config.yaml
 
+# In case of config changes for /etc/sysconfig/openshift_option file
+# this block will ensure those options should be updated to respective file
+# and service restart will pick latest options.
+if [ -f $master_config ]; then
+    sed -i.orig -e "s/\(.*subdomain:\).*/\1 $OPENSHIFT_SUBDOMAIN/" ${master_config}
+fi
+
+# Configuration for openshift master config file
 if [ ! -f $master_config ]; then
 
     # Prepare directories for bind-mounting
@@ -103,6 +111,7 @@ if [ ! -f $master_config ]; then
     # Remove the container
     rm_openshift_container
 fi
+
 
 # Now we start the server pointing to the prepared config files
 echo "[INFO] Starting OpenShift server"
