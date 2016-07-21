@@ -13,8 +13,34 @@ export OPENSHIFT_DIR=${ORIGIN_DIR}/openshift.local.config/master
 export KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig
 eval "OPENSHIFT_SUBDOMAIN=${OPENSHIFT_SUBDOMAIN}"
 
+# Default values for proxy
+HTTP_PROXY=${HTTP_PROXY:-""}
+HTTPS_PROXY=${HTTPS_PROXY:-""}
+NO_PROXY=${NO_PROXY:-""}
+
+
 # Get machine IP address
 ip=$(get_ip_address)
+
+# Proxy setup config
+read -r -d '' PROXY_CONFIG << EOM
+kubernetesMasterConfig:
+  admissionConfig:
+    pluginConfig:
+      BuildDefaults:
+        configuration:
+          apiVersion: v1
+          env:
+          - name: HTTP_PROXY
+            value: $HTTP_PROXY
+          - name: HTTPS_PROXY
+            value: $HTTPS_PROXY
+          - name: NO_PROXY
+            value: $NO_PROXY
+          gitHTTPProxy: $HTTP_PROXY
+          gitHTTPSProxy: $HTTPS_PROXY
+          kind: BuildDefaultsConfig
+EOM
 
 
 ########################################################################
@@ -26,6 +52,9 @@ start_openshift() {
         docker run $1 --name "openshift" --privileged --net=host --pid=host \
         -w ${ORIGIN_DIR} \
         -e "KUBECONFIG=${OPENSHIFT_DIR}/admin.kubeconfig" \
+        -e "NO_PROXY=${NO_PROXY}" \
+        -e "HTTP_PROXY=${HTTP_PROXY}" \
+        -e "HTTPS_PROXY=${HTTPS_PROXY}" \
         -v /:/rootfs:ro \
         -v /var/run:/var/run:rw \
         -v /sys:/sys:ro \
@@ -107,6 +136,12 @@ if [ ! -f $master_config ]; then
     -e "s/\(.*\)anypassword/\1 htpasswd/" \
     -e "s/\(.*\)kind: AllowAllPasswordIdentityProvider/\1kind: HTPasswdPasswordIdentityProvider\n\1file: ${DIR_EXPAND}\/user.htpasswd/" \
     -e "/corsAllowedOrigins:/,/- localhost/c\corsAllowedOrigins:\n- .*"
+
+    if [[ -n HTTP_PROXY ]]; then
+        # Older version of awk not support inplace edit
+        awk -v new="$PROXY_CONFIG" '/kubernetesMasterConfig/{print new} /kubernetesMasterConfig/,/pluginConfig/{next} 1' ${master_config} \
+            >tmp_file && mv -f tmp_file ${master_config}
+    fi
 
     # Remove the container
     rm_openshift_container

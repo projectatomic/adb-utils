@@ -3,3 +3,6 @@
 # Modify these options if you want to change openshift hostname
 OPENSHIFT_SUBDOMAIN="$(hostname).$(/opt/adb/openshift/get_ip_address).xip.io"
 IMAGE="docker.io/openshift/origin:latest"
+#NO_PROXY=localhost
+#HTTP_PROXY=http://USER:PASSWORD@IPADDR:PORT
+#HTTPS_PROXY=https://USER:PASSWORD@IPADDR:PORT

@@ -106,6 +106,13 @@ if [ ! -f ${ORIGIN_DIR}/secured.registry ]; then
 
   # Add "tls termination: passthroug" to already existing docker registry route
   oc get route docker-registry -o json  | sed -e 's/\("spec": {\)/\1 "tls": {"termination": "passthrough"},/g' | oc replace -f -
+
+  # Check if proxy enabled then add registry ip to docker proxy setting.
+  if [ -f /etc/systemd/system/docker.service.d/http-proxy.conf ]; then
+      sed -i.orig -r "s|^Environment=(.*)\"|Environment=\1,${REGISTRY_SERVICE_IP}\"|" /etc/systemd/system/docker.service.d/http-proxy.conf
+      systemctl daemon-reload
+  fi
+  touch ${ORIGIN_DIR}/secured.registry
 fi
 
 
