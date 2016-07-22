@@ -24,8 +24,7 @@ MASTER_SOURCE := https://github.com/projectatomic/adb-utils/archive/master.tar.g
 
 upstream:
 
-	# This will update source0 as tarball itself because we are creating tarball locally and also update version
-	# as per VERSION variable.
+	# Create SRPM for upstream release as per VERSION variable.
 	sed -i ${UPSTREAM_NAME}.spec \
 	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
 	    -e "s|^Version:\(\s\+\)\(.*\)$ |Version:\1${VERSION}|"
@@ -37,7 +36,7 @@ upstream:
 
 downstream:
 
-	# Change to downstream name and source
+	# Create SRPM for downstream with a proper release of upstream
 	sed -i \
 	    -e "s|^Name:\(\s\+\)\(.*\)$ |Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
 	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
@@ -55,9 +54,9 @@ downstream:
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}.tar.gz
 	git checkout ${UPSTREAM_NAME}.spec
 
-master:
+downstream_local:
 
-	# Change to downstream name and source
+	# Create SRPM for downstream which include local changes without commit
 	sed -i \
 	    -e "s|^Name:\(\s\+\)\(.*\)$ |Name:\1cdk-utils|" ${UPSTREAM_NAME}.spec \
 	    -e "s|^Source0:\(\s\+\)\(.*\)$ |Source0:\1\%{name}-\%{version}\.tar\.gz|" \
