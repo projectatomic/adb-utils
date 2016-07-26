@@ -178,12 +178,11 @@ def setup_kube_service_account_key():
 
 # This is not used "need discussion"
 def vagrant_box_variant():
-    try:
-        with open("/etc/os-release") as fh:
-            for line in fh:
-                if "Container Development Kit" in line:
-                    return False
-        return True
+    with open("/etc/os-release") as fh:
+        for line in fh:
+            if "Container Development Kit" in line:
+                return False
+    return True
 
 def pull_openshift_images():
     try:
