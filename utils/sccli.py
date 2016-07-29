@@ -174,7 +174,7 @@ def setup_kube_service_account_key():
            " /etc/kubernetes/apiserver")
     system("sed -i.back '/KUBE_CONTROLLER_MANAGER_ARGS=*/c\KUBE_CONTROLLER_MANAGER_ARGS="
            "\"--service_account_private_key_file=/etc/pki/kube-apiserver/serviceaccount.key\"'"
-           "/etc/kubernetes/controller-manager")
+           " /etc/kubernetes/controller-manager")
 
 # This is not used "need discussion"
 def vagrant_box_variant():
@@ -217,8 +217,8 @@ def service_start(service_name):
         # This is required because openshift does create kubeconfig for 8443 port
         subprocess.call("rm -fr /home/vagrant/.kube", shell=True)
         subprocess.call("rm -fr /root/.kube", shell=True)
-        if not subprocess.call("grep 'serviceaccount.key' /etc/kubernetes/apiserver"
-                               " > /dev/null 2>&1", shell=True):
+        if subprocess.call("grep 'serviceaccount.key' /etc/kubernetes/apiserver"
+                               " > /dev/null 2>&1", shell=True) != 0:
             setup_kube_service_account_key()
         err, returncode = system("systemctl start etcd kube-apiserver "
                                  "kube-controller-manager kube-scheduler")[1:]
