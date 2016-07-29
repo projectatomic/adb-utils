@@ -73,6 +73,12 @@ downstream_local:
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}.tar.gz
 	git checkout ${UPSTREAM_NAME}.spec
 
+update_autocomplete:
+	# Clone latest autocomplete script and put required location
+	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oadm > bash_completions/oadm
+	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oc > bash_completions/oc
+	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/openshift > bash_completions/openshift
+
 clean:
 
 	rm -fr *.tar.gz
