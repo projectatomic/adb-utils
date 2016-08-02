@@ -2,70 +2,20 @@
   "kind": "Template",
   "apiVersion": "v1",
   "metadata": {
-    "name": "jenkins-ephemeral-next",
+    "name": "jenkins",
     "creationTimestamp": null,
     "annotations": {
-      "description": "This is a preview of NEXT version of Jenkins template. It is a subject of change. Use with caution.\nJenkins service, with pipeline, kubernetes and OpenShift Build Sync plugins, without persistent storage.\nThe username is 'admin' and the tutorial at https://github.com/openshift/origin/blob/master/examples/jenkins/README.md contains more information about using this template.\nWARNING: Any data stored will be lost upon pod destruction. Only use this template for testing!",
+      "description": "Jenkins service, without persistent storage. WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing",
       "iconClass": "icon-jenkins",
       "tags": "instant-app,jenkins"
     }
   },
   "objects": [
     {
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${JENKINS_SERVICE_NAME}",
-        "creationTimestamp": null
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "web",
-            "protocol": "TCP",
-            "port": 80,
-            "targetPort": 8080,
-            "nodePort": 0
-          }
-        ],
-        "selector": {
-          "name": "${JENKINS_SERVICE_NAME}"
-        },
-        "portalIP": "",
-        "type": "ClusterIP",
-        "sessionAffinity": "None"
-      }
-    },
-    {
-      "kind": "Service",
-      "apiVersion": "v1",
-      "metadata": {
-        "name": "${JENKINS_SERVICE_NAME}-jnlp",
-        "creationTimestamp": null
-      },
-      "spec": {
-        "ports": [
-          {
-            "name": "agent",
-            "protocol": "TCP",
-            "port": 50000,
-            "targetPort": 50000,
-            "nodePort": 0
-          }
-        ],
-        "selector": {
-          "name": "${JENKINS_SERVICE_NAME}"
-        },
-        "portalIP": "",
-        "type": "ClusterIP",
-        "sessionAffinity": "None"
-      }
-    },
-    {
       "kind": "Route",
       "apiVersion": "v1",
       "metadata": {
-        "name": "${JENKINS_SERVICE_NAME}",
+        "name": "jenkins",
         "creationTimestamp": null
       },
       "spec": {
@@ -103,10 +53,9 @@
               ],
               "from": {
                 "kind": "ImageStreamTag",
-                "name": "${JENKINS_IMAGE_STREAM_TAG}",
-                "namespace": "${NAMESPACE}"
-              },
-              "lastTriggeredImage": ""
+                "name": "jenkins:1",
+                "namespace": "openshift"
+              }
             }
           },
           {
@@ -153,11 +102,7 @@
                   },
                   {
                     "name": "KUBERNETES_MASTER",
-                    "value": "https://kubernetes.default"
-                  },
-                  {
-                    "name": "KUBERNETES_NAMESPACE",
-                    "value": "${PROJECT}"
+                    "value": "https://kubernetes.default:443"
                   },
                   {
                     "name": "KUBERNETES_TRUST_CERTIFICATES",
@@ -221,9 +166,74 @@
       "roleRef": {
           "name": "edit"
       }
+    },
+    {
+      "kind": "Service",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "jenkins-jnlp"
+      },
+      "spec": {
+        "ports": [
+          {
+            "name": "agent",
+            "protocol": "TCP",
+            "port": 50000,
+            "targetPort": 50000,
+            "nodePort": 0
+          }
+        ],
+        "selector": {
+          "name": "${JENKINS_SERVICE_NAME}"
+        },
+        "portalIP": "",
+        "type": "ClusterIP",
+        "sessionAffinity": "None"
+      }
+    },
+    {
+       "kind": "Service",
+       "apiVersion": "v1",
+       "metadata": {
+         "name": "${JENKINS_SERVICE_NAME}",
+         "annotations": {
+           "service.alpha.openshift.io/dependencies": "[{\"name\": \"jenkins-jnlp\", \"namespace\": \"\", \"kind\": \"Service\"}]",
+           "service.openshift.io/infrastructure": "true"
+         },
+         "creationTimestamp": null
+       },
+       "spec": {
+         "ports": [
+           {
+             "name": "web",
+             "protocol": "TCP",
+             "port": 80,
+             "targetPort": 8080,
+             "nodePort": 0
+           }
+         ],
+         "selector": {
+           "name": "${JENKINS_SERVICE_NAME}"
+         },
+         "portalIP": "",
+         "type": "ClusterIP",
+         "sessionAffinity": "None"
+       }
     }
   ],
   "parameters": [
+    {
+      "name": "MEMORY_LIMIT",
+      "displayName": "Memory Limit",
+      "description": "Maximum amount of memory the container can use.",
+      "value": "512Mi"
+    },
+    {
+      "name": "NAMESPACE",
+      "displayName": "Namespace",
+      "description": "The OpenShift Namespace where the ImageStream resides.",
+      "value": "openshift"
+    },
     {
       "name": "JENKINS_SERVICE_NAME",
       "displayName": "Jenkins Service Name",
@@ -233,33 +243,9 @@
     {
       "name": "JENKINS_PASSWORD",
       "displayName": "Jenkins Password",
-      "description": "Password for the Jenkins 'admin' user.",
+      "description": "Password for the Jenkins user.",
       "generate": "expression",
       "value": "password"
-    },
-    {
-      "name": "MEMORY_LIMIT",
-      "displayName": "Memory Limit",
-      "description": "Maximum amount of memory the container can use.",
-      "value": "700Mi"
-    },
-    {
-      "name": "PROJECT",
-      "displayName": "Project",
-      "description": "The target project where jenkins pipeline operations should be performed/slaves launched.",
-      "value": "pipelineproject"
-    },
-    {
-      "name": "NAMESPACE",
-      "displayName": "Jenkins ImageStream Namespace",
-      "description": "The OpenShift Namespace where the Jenkins ImageStream resides.",
-      "value": "openshift"
-    },
-    {
-      "name": "JENKINS_IMAGE_STREAM_TAG",
-      "displayName": "Jenkins ImageStreamTag",
-      "description": "Name of the ImageStreamTag to be used for the Jenkins image.",
-      "value": "jenkins:dev"
     }
   ],
   "labels": {

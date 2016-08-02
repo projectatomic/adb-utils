@@ -14,7 +14,7 @@
 # Author: Praveen Kumar <kumarpraveen.nitdgp@gmail.com>
 
 UPSTREAM_NAME := adb-utils
-VERSION := 1.8
+VERSION := 1.9
 DOWNSTREAM_NAME := cdk-utils
 SOURCE := https://github.com/projectatomic/${UPSTREAM_NAME}/archive/v${VERSION}.tar.gz
 MASTER_SOURCE := https://github.com/projectatomic/adb-utils/archive/master.tar.gz
@@ -78,6 +78,31 @@ update_autocomplete:
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oadm > bash_completions/oadm
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oc > bash_completions/oc
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/openshift > bash_completions/openshift
+	
+update_template:
+	# Clone from upstream and put required location.
+	# Nodejs
+	curl -sL https://github.com/openshift/nodejs-ex/raw/master/openshift/templates/nodejs-mongodb.json > services/openshift/templates/common/nodejs-mongodb.json
+	curl -sL https://github.com/openshift/nodejs-ex/raw/master/openshift/templates/nodejs.json > services/openshift/templates/common/nodejs.json
+	# Cakephp
+	curl -sL https://github.com/openshift/cakephp-ex/raw/master/openshift/templates/cakephp.json > services/openshift/templates/common/cakephp.json
+	curl -sL https://github.com/openshift/cakephp-ex/raw/master/openshift/templates/cakephp-mysql.json > services/openshift/templates/common/cakephp-mysql.json
+	# Jenkins
+	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/master-slave/jenkins-slave-template.json > services/openshift/templates/common/jenkins-slave-template.json
+	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/pipeline/jenkinstemplate.json > services/openshift/templates/adb/jenkins-template.json
+	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-ephemeral-template.json > services/openshift/templates/cdk/jenkins-ephemeral-template.json
+	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-persistent-template.json > services/openshift/templates/cdk/jenkins-persistent-template.json
+	# EAP
+	curl -sL https://github.com/jboss-openshift/application-templates/raw/master/eap/eap64-mysql-persistent-s2i.json > services/openshift/templates/common/eap64-mysql-persistent-s2i.json
+	curl -sL https://github.com/jboss-openshift/application-templates/raw/master/eap/eap64-basic-s2i.json > services/openshift/templates/common/eap64-basic-s2i.json
+	# JWS tomcat
+	curl -sL https://github.com/jboss-openshift/application-templates/raw/master/webserver/jws30-tomcat7-mysql-persistent-s2i.json > services/openshift/templates/common/jws30-tomcat7-mysql-persistent-s2i.json
+	# Jboss Image Stream
+	curl -sL https://github.com/jboss-openshift/application-templates/raw/master/jboss-image-streams.json > services/openshift/templates/common/jboss-image-streams.json
+	# Image stream CentOS
+	curl -sL https://github.com/openshift/origin/raw/master/examples/image-streams/image-streams-centos7.json > services/openshift/templates/adb/image-streams-centos7.json
+	# Image stream RHEL
+	curl -sL https://github.com/openshift/origin/raw/master/examples/image-streams/image-streams-rhel7.json > services/openshift/templates/cdk/image-streams-rhel7.json
 
 clean:
 
