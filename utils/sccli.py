@@ -107,6 +107,7 @@ def get_registry_image_tag_defaults():
         for content in file_content:
             if 'IMAGE' in content:
                 content = content.strip()
+                content = content.translate(None, '"')
                 docker_registry = content.split('/', 1)[0].split('=')[-1]
                 image_name, image_tag = tuple(content.split('/', 1)[1].split(':'))
                 return (docker_registry, image_name, image_tag)
