@@ -177,14 +177,6 @@ def setup_kube_service_account_key():
            "\"--service_account_private_key_file=/etc/pki/kube-apiserver/serviceaccount.key\"'"
            " /etc/kubernetes/controller-manager")
 
-# This is not used "need discussion"
-def vagrant_box_variant():
-    with open("/etc/os-release") as fh:
-        for line in fh:
-            if "Container Development Kit" in line:
-                return False
-    return True
-
 def pull_openshift_images():
     try:
         DOCKER_REGISTRY, IMAGE_NAME, IMAGE_TAG = get_registry_image_tag_defaults()
@@ -230,10 +222,9 @@ def service_start(service_name):
             return system("systemctl start kube-proxy kubelet")[1:]
     if service_name == "openshift":
         service_stop("kubernetes")
-        if vagrant_box_variant():
-            output, returncode = pull_openshift_images()
-            if returncode:
-                return (output, returncode)
+        output, returncode = pull_openshift_images()
+        if returncode:
+            return (output, returncode)
         output, returncode =  system("systemctl start openshift")[1:]
         if output:
             return (output, returncode)
