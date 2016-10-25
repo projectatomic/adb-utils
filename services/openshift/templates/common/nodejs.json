@@ -4,11 +4,13 @@
   "metadata": {
     "name": "nodejs-example",
     "annotations": {
-      "description": "An example Node.js application with no database",
+      "openshift.io/display-name": "Node.js",
+      "description": "An example Node.js application with no database. For more information about using this template, including OpenShift considerations, see https://github.com/openshift/nodejs-ex/blob/master/README.md.",
       "tags": "quickstart,nodejs",
       "iconClass": "icon-nodejs"
     }
   },
+  "message": "The following service(s) have been created in your project: ${NAME}.\n\nFor more information about using this template, including OpenShift considerations, see https://github.com/openshift/nodejs-ex/blob/master/README.md.",
   "labels": {
     "template": "nodejs-example"
   },
