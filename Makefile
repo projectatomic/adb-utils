@@ -89,7 +89,7 @@ update_template:
 	curl -sL https://github.com/openshift/cakephp-ex/raw/master/openshift/templates/cakephp-mysql.json > services/openshift/templates/common/cakephp-mysql.json
 	# Jenkins
 	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/master-slave/jenkins-slave-template.json > services/openshift/templates/common/jenkins-slave-template.json
-	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/pipeline/jenkinstemplate.json > services/openshift/templates/adb/jenkins-template.json
+	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/pipeline/samplepipeline.json > services/openshift/templates/adb/samplepipeline.json
 	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-ephemeral-template.json > services/openshift/templates/cdk/jenkins-ephemeral-template.json
 	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-persistent-template.json > services/openshift/templates/cdk/jenkins-persistent-template.json
 	# EAP
