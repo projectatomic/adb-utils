@@ -100,6 +100,11 @@ def set_proxy():
         except IOError as err:
             return err
 
+def image_tag_exist(image):
+    if subprocess.check_output("docker images -q %s" % image, shell=True):
+        return True
+    return False
+
 def get_registry_image_tag_defaults():
     try:
         with open(OPENSHIFT_OPTION) as fh:
@@ -193,13 +198,14 @@ def pull_openshift_images():
                        "{0}/{1}-deployer:{2} "
                        "{0}/{1}-docker-registry:{2} "
                        "{0}/{1}-sti-builder:{2}").format(docker_registry, image_name, image_tag)
-    sys.stdout.write("Downloading OpenShift docker images" + "\n")
     sys.stdout.flush()
     for image in image_pull_list.split():
-        sys.stdout.write("docker pull %s" % image + "\n")
-        sys.stdout.flush()
-        if system("docker pull %s" % image)[2]:
-            return ("%s Not Pulled" % image, 111)
+        if not image_tag_exist(image):
+            sys.stdout.write("Downloading OpenShift docker images" + "\n")
+            sys.stdout.write("docker pull %s" % image + "\n")
+            sys.stdout.flush()
+            if system("docker pull %s" % image)[2]:
+                return ("%s Not Pulled" % image, 111)
     return ('', 0)
 
 def service_start(service_name):
