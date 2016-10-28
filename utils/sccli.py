@@ -125,16 +125,12 @@ def service_status(service_name):
         services = ['etcd', 'kube-apiserver', 'kube-controller-manager',
                     'kube-scheduler', 'kube-proxy', 'kubelet']
         for service in services:
-            while system("systemctl is-active %s" % service)[0].strip() == 'activating':
-                time.sleep(1)
             status = status or system("systemctl is-active %s" % service)[2]
             if status:
                 service_stop(service_name)
                 break
         return status
     else:
-        while system("systemctl is-active %s" % service_name)[0].strip() == 'activating':
-            time.sleep(1)
         return system("systemctl is-active %s" % service_name)[2]
 
 def service_restart(service_name):
@@ -236,10 +232,20 @@ def service_start(service_name):
         if returncode:
             return (output, returncode)
         output, returncode =  system("systemctl start openshift")[1:]
-        if output:
-            return (output, returncode)
         # This is required because of proxy configurations.
-        return system("systemctl restart docker")[1:]
+        if os.getenv('PROXY', ''):
+            output, returncode = system("systemctl restart docker")[1:]
+            if output:
+                return(output, returncode)
+            else:
+                # Since docker service restarted which make openshift service also
+                # restarted so we need to wait until it start/fail.
+                while 'activating' in system("systemctl is-active openshift")[0]:
+                    time.sleep(1)
+                return system("systemctl is-active openshift")[1:]
+        else:
+            return(output, returncode)
+
     if service_name == "docker":
         return system("systemctl start docker")[1:]
 
