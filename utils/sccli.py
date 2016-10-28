@@ -121,7 +121,7 @@ def service_status(service_name):
                     'kube-scheduler', 'kube-proxy', 'kubelet']
         for service in services:
             while system("systemctl is-active %s" % service)[0].strip() == 'activating':
-                pass
+                time.sleep(1)
             status = status or system("systemctl is-active %s" % service)[2]
             if status:
                 service_stop(service_name)
@@ -129,7 +129,7 @@ def service_status(service_name):
         return status
     else:
         while system("systemctl is-active %s" % service_name)[0].strip() == 'activating':
-            pass
+            time.sleep(1)
         return system("systemctl is-active %s" % service_name)[2]
 
 def service_restart(service_name):
