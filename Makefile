@@ -14,7 +14,7 @@
 # Author: Praveen Kumar <kumarpraveen.nitdgp@gmail.com>
 
 UPSTREAM_NAME := adb-utils
-VERSION := 1.9
+VERSION := 2.1
 DOWNSTREAM_NAME := cdk-utils
 SOURCE := https://github.com/projectatomic/${UPSTREAM_NAME}/archive/v${VERSION}.tar.gz
 MASTER_SOURCE := https://github.com/projectatomic/adb-utils/archive/master.tar.gz
