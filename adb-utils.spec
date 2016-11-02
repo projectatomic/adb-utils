@@ -1,6 +1,6 @@
 Name:          adb-utils
-Version:       2.0
-Release:       2%{?dist}
+Version:       2.1
+Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
 License:       GPLV2
@@ -50,6 +50,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.adoc
 
 %changelog
+* Wed Nov 02 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 2.1-1
+- Update to 2.1 version
+
 * Wed Oct 12 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 2.0-2
 - Fix doc format from .rst to .adoc
 
