@@ -187,9 +187,12 @@ def pull_openshift_images():
         DOCKER_REGISTRY, IMAGE_NAME, IMAGE_TAG = get_registry_image_tag_defaults()
     except ValueError:
         return("Not able to find: %s or syntax changed" % OPENSHIFT_OPTION, 112)
-    docker_registry = os.getenv('DOCKER_REGISTRY', DOCKER_REGISTRY)
-    image_name = os.getenv('IMAGE_NAME', IMAGE_NAME)
-    image_tag = os.getenv('IMAGE_TAG', IMAGE_TAG)
+    if os.getenv('DOCKER_REGISTRY'):
+        docker_registry = os.getenv('DOCKER_REGISTRY', DOCKER_REGISTRY)
+    if os.getenv('IMAGE_NAME'):
+        image_name = os.getenv('IMAGE_NAME', IMAGE_NAME)
+    if os.getenv('IMAGE_TAG'):
+        image_tag = os.getenv('IMAGE_TAG', IMAGE_TAG)
     if system(('sed -i.back "/^IMAGE=*/cIMAGE=\"%s/%s\:%s\""'
             ' %s') % (docker_registry, image_name, image_tag, OPENSHIFT_OPTION))[2]:
         return ("Permisison denined: %s" % OPENSHIFT_OPTION, 37)
