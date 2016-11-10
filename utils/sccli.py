@@ -201,11 +201,9 @@ def pull_openshift_images():
                        "{0}/{1}-deployer:{2} "
                        "{0}/{1}-docker-registry:{2} "
                        "{0}/{1}-sti-builder:{2}").format(docker_registry, image_name, image_tag)
-    sys.stdout.flush()
     for image in image_pull_list.split():
         if not image_tag_exist(image):
-            sys.stdout.write("Downloading OpenShift docker images" + "\n")
-            sys.stdout.write("docker pull %s" % image + "\n")
+            sys.stdout.write("docker pull %s\n" % image )
             sys.stdout.flush()
             if system("docker pull %s" % image)[2]:
                 return ("%s Not Pulled" % image, 111)
