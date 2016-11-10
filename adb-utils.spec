@@ -1,6 +1,6 @@
 Name:          adb-utils
-Version:       2.1
-Release:       2%{?dist}
+Version:       2.2
+Release:       1%{?dist}
 Summary:       Installs the necessary utils/service files to support ADB/CDK
 
 License:       GPLV2
@@ -50,6 +50,9 @@ ln -s /opt/adb/add_insecure_registry %{buildroot}%{_bindir}/add_insecure_registr
 %doc LICENSE  README.adoc
 
 %changelog
+* Thu Nov 10 2016 Praveen Kumar <kumarpraveen.nitdgp@gmail.com> - 2.2-1
+- Update to 2.2 version
+
 * Wed Nov 09 2016 Praveen Kumar <kumarpaveen.nitdgp@gmail.com> - 2.1-2
 - Fix sccli script for environment variable
 
