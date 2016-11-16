@@ -188,19 +188,19 @@ def pull_openshift_images():
     except ValueError:
         return("Not able to find: %s or syntax changed" % OPENSHIFT_OPTION, 112)
     if os.getenv('DOCKER_REGISTRY'):
-        docker_registry = os.getenv('DOCKER_REGISTRY', DOCKER_REGISTRY)
+        DOCKER_REGISTRY = os.getenv('DOCKER_REGISTRY', DOCKER_REGISTRY)
     if os.getenv('IMAGE_NAME'):
-        image_name = os.getenv('IMAGE_NAME', IMAGE_NAME)
+        IMAGE_NAME = os.getenv('IMAGE_NAME', IMAGE_NAME)
     if os.getenv('IMAGE_TAG'):
-        image_tag = os.getenv('IMAGE_TAG', IMAGE_TAG)
+        IMAGE_TAG = os.getenv('IMAGE_TAG', IMAGE_TAG)
     if system(('sed -i.back "/^IMAGE=*/cIMAGE=\"%s/%s\:%s\""'
-            ' %s') % (docker_registry, image_name, image_tag, OPENSHIFT_OPTION))[2]:
+            ' %s') % (DOCKER_REGISTRY, IMAGE_NAME, IMAGE_TAG, OPENSHIFT_OPTION))[2]:
         return ("Permisison denined: %s" % OPENSHIFT_OPTION, 37)
     image_pull_list = ("{0}/{1}:{2} "
                        "{0}/{1}-haproxy-router:{2} "
                        "{0}/{1}-deployer:{2} "
                        "{0}/{1}-docker-registry:{2} "
-                       "{0}/{1}-sti-builder:{2}").format(docker_registry, image_name, image_tag)
+                       "{0}/{1}-sti-builder:{2}").format(DOCKER_REGISTRY, IMAGE_NAME, IMAGE_TAG)
     for image in image_pull_list.split():
         if not image_tag_exist(image):
             sys.stdout.write("docker pull %s\n" % image )
