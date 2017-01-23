@@ -2,15 +2,15 @@
 # is made available to anyone wishing to use, modify, copy, or
 # redistribute it subject to the terms and conditions of the GNU General
 # Public License v.2.
-# 
+#
 # This program is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE. See the GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-# 
+#
 # Author: Praveen Kumar <kumarpraveen.nitdgp@gmail.com>
 
 UPSTREAM_NAME := adb-utils
@@ -46,7 +46,7 @@ downstream:
 	curl -sL -O ${SOURCE}
 	tar -xvf v${VERSION}.tar.gz && rm v${VERSION}.tar.gz
 	mv ${UPSTREAM_NAME}-${VERSION} ${DOWNSTREAM_NAME}-${VERSION}
-	
+
 	tar -cvf ${DOWNSTREAM_NAME}-${VERSION}.tar.gz ${DOWNSTREAM_NAME}-${VERSION} && \
 	    rm -fr ${DOWNSTREAM_NAME}-${VERSION}
 	rpmbuild --define "_sourcedir ${PWD}" --define "_srcrpmdir ${PWD}" \
@@ -78,7 +78,7 @@ update_autocomplete:
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oadm > bash_completions/oadm
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/oc > bash_completions/oc
 	curl -sL https://github.com/openshift/origin/raw/master/contrib/completions/bash/openshift > bash_completions/openshift
-	
+
 update_template:
 	# Clone from upstream and put required location.
 	# Nodejs
@@ -88,8 +88,6 @@ update_template:
 	curl -sL https://github.com/openshift/cakephp-ex/raw/master/openshift/templates/cakephp.json > services/openshift/templates/common/cakephp.json
 	curl -sL https://github.com/openshift/cakephp-ex/raw/master/openshift/templates/cakephp-mysql.json > services/openshift/templates/common/cakephp-mysql.json
 	# Jenkins
-	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/master-slave/jenkins-slave-template.json > services/openshift/templates/common/jenkins-slave-template.json
-	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/pipeline/samplepipeline.json > services/openshift/templates/adb/samplepipeline.json
 	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-ephemeral-template.json > services/openshift/templates/cdk/jenkins-ephemeral-template.json
 	curl -sL https://github.com/openshift/origin/raw/master/examples/jenkins/jenkins-persistent-template.json > services/openshift/templates/cdk/jenkins-persistent-template.json
 	# EAP

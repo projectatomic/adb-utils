@@ -200,26 +200,6 @@
                     }
                 },
                 "env": [
-                  {
-                    "name": "DATABASE_SERVICE_NAME",
-                    "value": "${DATABASE_SERVICE_NAME}"
-                  },
-                  {
-                    "name": "MONGODB_USER",
-                    "value": "${MONGODB_USER}"
-                  },
-                  {
-                    "name": "MONGODB_PASSWORD",
-                    "value": "${MONGODB_PASSWORD}"
-                  },
-                  {
-                    "name": "MONGODB_DATABASE",
-                    "value": "${MONGODB_DATABASE}"
-                  },
-                  {
-                    "name": "MONGODB_ADMIN_PASSWORD",
-                    "value": "${MONGODB_ADMIN_PASSWORD}"
-                  }
                 ],
                 "resources": {
 		      "limits": {
@@ -291,29 +271,6 @@
       "description": "A secret string used to configure the Generic webhook.",
       "generate": "expression",
       "from": "[a-zA-Z0-9]{40}"
-    },
-    {
-      "name": "DATABASE_SERVICE_NAME",
-      "displayName": "Database Service Name"
-    },
-    {
-      "name": "MONGODB_USER",
-      "displayName": "MongoDB Username",
-      "description": "Username for MongoDB user that will be used for accessing the database."
-    },
-    {
-      "name": "MONGODB_PASSWORD",
-      "displayName": "MongoDB Password",
-      "description": "Password for the MongoDB user."
-    },
-    {
-      "name": "MONGODB_DATABASE",
-      "displayName": "Database Name"
-    },
-    {
-      "name": "MONGODB_ADMIN_PASSWORD",
-      "displayName": "Database Administrator Password",
-      "description": "Password for the database admin user."
     },
     {
       "name": "NPM_MIRROR",
