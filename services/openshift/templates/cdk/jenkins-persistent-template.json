@@ -5,7 +5,8 @@
     "name": "jenkins-persistent",
     "creationTimestamp": null,
     "annotations": {
-      "description": "Jenkins service, with persistent storage.\nYou must have persistent volumes available in your cluster to use this template.",
+      "openshift.io/display-name": "Jenkins (Persistent)",
+      "description": "Jenkins service, with persistent storage.\n\nNOTE: You must have persistent volumes available in your cluster to use this template.",
       "iconClass": "icon-jenkins",
       "tags": "instant-app,jenkins"
     }
@@ -105,7 +106,8 @@
                 },
                 "livenessProbe": {
                     "timeoutSeconds": 3,
-                    "initialDelaySeconds": 120,
+                    "initialDelaySeconds": 420,
+                    "failureThreshold" : 30,
                     "httpGet": {
                         "path": "/login",
                         "port": 8080
@@ -114,7 +116,7 @@
                 "env": [
                   {
                     "name": "OPENSHIFT_ENABLE_OAUTH",
-                    "value": "true"
+                    "value": "${ENABLE_OAUTH}"
                   },
                   {
                     "name": "OPENSHIFT_ENABLE_REDIRECT_PROMPT",
@@ -173,7 +175,7 @@
         "metadata": {
             "name": "${JENKINS_SERVICE_NAME}",
             "annotations": {
-                  "serviceaccounts.openshift.io/oauth-redirectref.jenkins": "{\"kind\": \"Route\", \"name\": \"${JENKINS_SERVICE_NAME}\", \"group\": \"\"}"
+		"serviceaccounts.openshift.io/oauth-redirectreference.jenkins": "{\"kind\":\"OAuthRedirectReference\",\"apiVersion\":\"v1\",\"reference\":{\"kind\":\"Route\",\"name\":\"${JENKINS_SERVICE_NAME}\"}}"
             }
         }
     },
@@ -258,6 +260,12 @@
       "displayName": "Jenkins JNLP Service Name",
       "description": "The name of the service used for master/slave communication.",
       "value": "jenkins-jnlp"
+    },
+    {
+      "name": "ENABLE_OAUTH",
+      "displayName": "Enable OAuth in Jenkins",
+      "description": "Whether to enable OAuth OpenShift integration. If false, the static account 'admin' will be initialized with the password 'password'.",
+      "value": "true"
     },
     {
       "name": "MEMORY_LIMIT",
