@@ -59,7 +59,7 @@ start_openshift() {
         -v /var/run:/var/run:rw \
         -v /sys:/sys:ro \
         -v /var/lib/docker:/var/lib/docker:rw \
-        -v ${ORIGIN_DIR}/openshift.local.volumes:${ORIGIN_DIR}/openshift.local.volumes:z \
+        -v ${ORIGIN_DIR}/openshift.local.volumes:${ORIGIN_DIR}/openshift.local.volumes:rslave,z \
         -v ${ORIGIN_DIR}/openshift.local.config:${ORIGIN_DIR}/openshift.local.config:z \
         -v ${ORIGIN_DIR}/openshift.local.etcd:${ORIGIN_DIR}/openshift.local.etcd:z \
         $IMAGE start "${@:2}"
