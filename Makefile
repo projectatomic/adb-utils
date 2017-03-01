@@ -102,6 +102,24 @@ update_template:
 	# Image stream RHEL
 	curl -sL https://github.com/openshift/origin/raw/master/examples/image-streams/image-streams-rhel7.json > services/openshift/templates/cdk/image-streams-rhel7.json
 
+	# Fuse Integration Services Image Stream and Templates
+	cd services/openshift/templates/common; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/fis-image-streams.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/karaf2-camel-amq-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/karaf2-camel-log-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/karaf2-camel-rest-sql-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/karaf2-cxf-rest-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-amq-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-config-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-drools-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-infinispan-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-rest-sql-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-teiid-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-camel-xml-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-cxf-jaxrs-template.json; \
+	curl -sLO https://raw.githubusercontent.com/jboss-fuse/application-templates/GA/quickstarts/spring-boot-cxf-jaxws-template.json
+
 clean:
 
 	rm -fr *.tar.gz
